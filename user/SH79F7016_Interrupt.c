@@ -1,12 +1,12 @@
-/*=============================================================
-	±àÐ´Õß£ºwangjie
- 	±àÐ´Ê±¼ä£º2020-8-20
-	MCU£ºSH79F7016
- 
-=============================================================*/
+/*
+ * @Description: In User Settings Edit
+ * @Author: wang
+ * @Date: 2020-08-21 09:57:25
+ * @LastEditTime: 2020-08-22 13:37:17
+ * @LastEditors: Please set LastEditors
+ */
 
 #include "SH79F7016_Interrupt.h"
-#include "SH79F7016_Initial.h"
 
 BOOL b200us = 0;
 
@@ -56,44 +56,33 @@ void Timer0_ISR(void) interrupt INTERRUPT_Timer0
 	TL0 = 0x38; //0.2ms 5kHz
 
 	Set200us();
-	/*
+	
 	if(PlayVoiceMCU == 4)
 	{
 		ch20ms ++;
 		if(ch20ms>100)
 		{
-			b20ms = 1;
-			ch20ms = 0;
+            ch20ms = 0;
+			Set20ms();
 		}
 	}
-	*/
+	
     ch5Ms++;
     if (ch5Ms > 25)
     {
         ch5Ms = 0;
-		Set5Ms();
-		/*
-        if (PlayVoiceMCU == 0)
-        {
-            if (chVoicems)
-            {
-                chVoicems--;
-                PlayVoice();
-            }
-        }
-		*/   
+		Set5Ms(); 
     }
     ch1Ms++;
     if (ch1Ms > 5)
     {
         ch1Ms = 0;
-        Set1Ms();
-		/*
-   			 if (PlayVoiceMCU == 1 ||PlayVoiceMCU == 3)
-    		{
-    		    H1W_Mode();
-    		}
-		*/
+        Set1Ms();	
+   		if (PlayVoiceMCU == 1 ||PlayVoiceMCU == 3)
+    	{
+    	    H1W_Mode();
+    	}
+		
     }
 
 	lFlashLedTime++;

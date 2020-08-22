@@ -2,7 +2,7 @@
 #define SH79F7016_INITIAL_H
 
 //#include "SH79F7016.h"
-//#include "define.h"
+#include "includes.h"
 #include "reg_it.h"
 
 #define LENGTHREAD 40

@@ -2,14 +2,13 @@
  * @Description: 固件库定义
  * @Author: XPH
  * @Date: 2019-09-13 16:52:45
- * @LastEditTime: 2020-04-16 13:32:42
+ * @LastEditTime: 2020-08-22 15:24:45
  * @LastEditors: Please set LastEditors
  */
 #ifndef __REG_IT_H
 #define __REG_IT_H
 #include "SH79F7016.h"
 #include "basic_api.h"
-#include "define.h"
 
 #include <intrins.h>
 #include <string.h>
@@ -17,6 +16,50 @@
 #include <math.h>
 
 sfr IE    = 0xA8;
+
+
+//特殊功能寄存器BANK切换
+#define BANK1_SET()	INSCON |= 0x40;
+#define BANK0_SET()	INSCON &= 0xBF;
+
+
+typedef unsigned char uchar;
+//typedef unsigned char U8;
+typedef unsigned char uint8;
+
+//typedef unsigned int U16;
+typedef unsigned int uint16;
+typedef unsigned int uint;
+
+//typedef unsigned long U32;
+typedef unsigned long uint32;
+
+//typedef signed   char S8;
+typedef signed   char int8;
+
+//typedef signed   int S16;
+typedef signed   int int16;
+
+//typedef signed   long S32;
+typedef signed   long int32;
+
+typedef bit BOOL;
+
+#define LongToBin(n)        \
+    (                       \
+    ((n >> 21) & 0x80) |    \
+    ((n >> 18) & 0x40) |    \
+    ((n >> 15) & 0x20) |    \
+    ((n >> 12) & 0x10) |    \
+    ((n >>  9) & 0x08) |    \
+    ((n >>  6) & 0x04) |    \
+    ((n >>  3) & 0x02) |    \
+    ((n      ) & 0x01)      \
+    )
+//write binary charactor set,exsample : Bin(11111111) = 0xff
+#define Bin(n) LongToBin(0x##n##l)
+
+
 
 //P2端口寄存器输出高低电平定义
 #define P20_H()   P2 |= 0x01

@@ -1,10 +1,15 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: wang
+ * @Date: 2020-08-21 09:57:25
+ * @LastEditTime: 2020-08-22 14:03:38
+ * @LastEditors: Please set LastEditors
+ */
 #ifndef SH79F7016_INTERRUPT_H
 #define SH79F7016_INTERRUPT_H
-
-//#include "SH79F7016.h"
-//#include "define.h"
-//#include "intrins.h"
+#include "includes.h"
 #include "reg_it.h"
+
 
 #define INTERRUPT_INT4				0
 #define INTERRUPT_Timer0			1

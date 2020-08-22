@@ -2,14 +2,14 @@
  * @Description: 基础通用API
  * @Author: XPH
  * @Date: 2019-09-14 08:14:32
- * @LastEditTime: 2020-04-16 10:24:24
+ * @LastEditTime: 2020-08-22 15:25:32
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BASIC_API_H
 #define __BASIC_API_H
 #include "reg_it.h"
-
 #include <intrins.h>
+
 #define DefBeepPWM 0         //0：IO 1：PWM
 #define DefSPISoftORHard 0   //0:软件 1：硬件
 
@@ -48,9 +48,9 @@
 #define VoiceDUOLE 5  	//多乐
 #define VoiceNORMAL 6  	//通用
 
-void Delay_Soft(unsigned int i);
-void Delay_Soft_NOP(unsigned int i);
-void Delay_200us(unsigned char i);
+void Delay_Soft(uint16 i);
+void Delay_Soft_NOP(uint16 i);
+void Delay_200us(uint8 i);
 
 
 

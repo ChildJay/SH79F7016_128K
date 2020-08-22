@@ -2,27 +2,26 @@
  * @Description: LCD点阵液晶显示
  * @Author: XPH
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-04-16 13:39:02
+ * @LastEditTime: 2020-08-22 11:28:15
  * @LastEditors: Please set LastEditors
  */
 
 #include "bsp_LCD.h"
 
-static xdata uchar chDZ_Data[34]; //用于保存读出的点阵数据的数组
+xdata uint8 chDZ_Data[34]; //用于保存读出的点阵数据的数组
 
-xdata uchar chStartx = 0;      //显示数据起始位置-x，主要是为了给靠右显示时，存在单位的参数使用，如：xxxx转/分
-bit bBitChangeIndexOrTemp = 0; //用于判断位选功能在参数还是选项之间切换
+xdata uint8 chStartx = 0; //显示数据起始位置-x，主要是为了给靠右显示时，存在单位的参数使用，如：xxxx转/分
+//BOOL bBitChangeIndexOrTemp = 0; //用于判断位选功能在参数还是选项之间切换 1在参数序号 0在参数选项
 
-void InitLCD_GPIO(void) 
+void InitLCD_GPIO(void)
 {
-	P5CR |= 0x04;//cs
-	P5CR |= 0x02;//res
-	P3CR |= 0x80;//A0
-	P3CR |= 0x40;//sck
-	P3CR |= 0x20;//sda
-	LCD_CS1 = 1; 
+  P5CR |= 0x04; //cs
+  P5CR |= 0x02; //res
+  P3CR |= 0x80; //A0
+  P3CR |= 0x40; //sck
+  P3CR |= 0x20; //sda
+  LCD_CS1 = 1;
 }
-
 /**
   * @brief   给LCD写入指令/数据
   * @param   
@@ -31,9 +30,9 @@ void InitLCD_GPIO(void)
   * @note	无
   * @retval  无
   */
-void LCD_Write(uchar chData, uchar chCD)
+void LCD_Write(uint8 chData, uint8 chCD)
 {
-  uchar i, byte = 0;
+  uint8 i, byte = 0;
   LCD_CS1 = 0;   //开片选
   LCD_A0 = chCD; // 命令与数据控制端 0-命令,1-数据
   LCD_SCK = 0;
@@ -57,6 +56,79 @@ void LCD_Write(uchar chData, uchar chCD)
   LCD_CS1 = 1; //关片选
 }
 /**
+  * @brief  初始化 LCD，调整LCD显示对比度
+  * @param   
+  *     @arg chVoltage: 对比度
+  * @note	
+  * @retval  无
+  */
+void InitLCD(uint8 chVoltage) // 初始化LCD
+{
+  uint8 i;
+  InitLCD_GPIO();
+  LCD_CS1 = 0; // 选通芯片
+               //  LCD_RD  = 1;      // 读无效
+  LCD_RES = 0; // 硬件复位
+  Delay_Soft(20);
+  LCD_RES = 1; // 复位禁止
+  for (i = 0; i < 200; i++)
+  {
+    Delay_Soft(20);
+  }
+
+  LCD_Write(0xe2, 0);        //(14)software reset
+  LCD_Write(0xA2, 0);        //(11)bias select 0:1/9 1:1/7(at 1/65dyty)
+  LCD_Write(0xA0 | 0x01, 0); //(8)set scan direction of seg
+  LCD_Write(0xC0 | 0x08, 0); //(15)set output direction of com
+
+  LCD_Write(0x2c, 0);             //(16)built-in Booster On
+  LCD_Write(0x2e, 0);             //(16)Built-in Regulator ON
+  LCD_Write(0x2F, 0);             //(16)built-in Follower On
+  LCD_Write(0x24, 0);             //(15)对比度
+  LCD_Write(0x81, 0);             //(18)Double command
+  LCD_Write(0x20 | chVoltage, 0); //(18)微调对比度
+
+  LCD_Write(0xAF, 0); //(1)display on
+  LCD_Write(0x40, 0); // (2)set display start line0
+
+  LCD_Clear(0, 128, 0, 64);
+  LCD_CS1 = 1; //关片选
+}
+
+/**
+  * @brief   LCD清屏
+  * @param   
+  *     @arg chx1: 横坐标1
+  *     @arg chx2: 横坐标2
+  *     @arg chy1: 纵坐标1
+  *     @arg chy2: 纵坐标2
+  * @note	
+  * @retval  无
+  */
+void LCD_Clear(uint8 chx1, uint8 chx2, uint8 chy1, uint8 chy2)
+{
+  unsigned char i, chTemp, k;
+  unsigned char chColH, chColL;
+  chColH = chx1 + 4;
+  chColL = chColH & 0x0F;
+  chColH >>= 4;
+  chColH |= 0x10;
+  chy1 = chy1 / 8;
+  chy2 = chy2 / 8;
+  for (i = chy1; i < chy2; i++)
+  {
+    chTemp = 0xb0 + i;
+    LCD_Write(chTemp, 0); //将页地址共4页
+    LCD_Write(chColH, 0); //列高地址设置.
+    LCD_Write(chColL, 0); //列低地址设置.
+    for (k = chx1; k < chx2; k++)
+    {
+      LCD_Write(0x00, 1); //数据0
+    }
+  }
+}
+
+/**
   * @brief   LCD显示
   * @param   
   *     @arg x:横坐标
@@ -67,9 +139,9 @@ void LCD_Write(uchar chData, uchar chCD)
   * @note	无
   * @retval  无
   */
-void LCD_Dis(uchar x, uchar y, uchar chLength, uchar *pData, uchar reverse)
+void LCD_Dis(uint8 x, uint8 y, uint8 chLength, uint8 *pData, uint8 reverse)
 {
-  uchar i, chPage, chColH, chColL, Length;
+  uint8 i, chPage, chColH, chColL, Length;
   //    bShadow = bShadow;
   // 计算页
   if (reverse)
@@ -118,15 +190,13 @@ void LCD_Dis(uchar x, uchar y, uchar chLength, uchar *pData, uchar reverse)
   }
 }
 
-
-
 void InitSPI(void)
 {
-  EA = 0;//禁止所有中断
+  EA = 0; //禁止所有中断
   INSCON = 0x00;
   DIRMO_OUT;
   DIRMI_IN;
-  P10PCR |= 0x40;//开启MISO输入上拉电阻
+  P10PCR |= 0x40; //开启MISO输入上拉电阻
   DIRCLK_OUT;
   DIRCS_OUT;
   EA = 1;
@@ -138,7 +208,7 @@ void InitSPI(void)
   * @note	无
   * @retval  无
   */
-void SPI_TX(uchar dat)
+void SPI_TX(uint8 dat)
 {
   unsigned char xdata i = 0x80;
   PINCLK_H;
@@ -157,7 +227,7 @@ void SPI_TX(uchar dat)
     PINCLK_L;    //下降沿
     SPI_Delay(); //高电平保持
     SPI_Delay();
-    
+
     PINCLK_H;    //上升沿
     SPI_Delay(); //低电平保持
   }
@@ -168,26 +238,26 @@ void SPI_TX(uchar dat)
   * @note	无
   * @retval  Temp:收取一个字节的数据
   */
-uchar SPI_RX(void)
+uint8 SPI_RX(void)
 {
-  uchar i = 8, dat = 0;
+  uint8 i = 8, dat = 0;
   PINMO_H;
   PINCLK_H;
   for (; i > 0; i--)
   {
-	SPI_Delay(); 	
+    SPI_Delay();
     PINCLK_L; //下降沿读数据
     SPI_Delay();
-	SPI_Delay();
-	PINCLK_H;    //上升沿写数据
+    SPI_Delay();
+    PINCLK_H;    //上升沿写数据
     SPI_Delay(); //高电平保持
     SPI_Delay();
-   	dat <<= 1;
+    dat <<= 1;
     if (PIN_MISO)
     {
       dat |= 0x01;
     }
-	SPI_Delay(); 
+    SPI_Delay();
   }
   return dat;
 }
@@ -221,9 +291,9 @@ void SPI_CLOSE(void) //CS输入上拉，CLK输出低电平，
   * @note	无
   * @retval  无
   */
-void SPIReadByte(ulong Addr, uchar ByteCount, uchar *P)
+void SPIReadByte(uint32 Addr, uint8 ByteCount, uint8 *P)
 {
-  uchar i = 0;
+  uint8 i = 0;
   SPI_OPEN();
   SPI_TX(READ);
   SPI_TX((Addr & 0xFFFFFF) >> 16);
@@ -242,18 +312,17 @@ void SPIReadByte(ulong Addr, uchar ByteCount, uchar *P)
   *     @arg MSB: GB2312的文字地址高位
   *     @arg LSB: GB2312的文字地址低位
   *     @arg Type:文字类型
-  * @note	MSB 表示汉字内码GBCode 的高8bits。
-  *         LSB 表示汉字内码GBCode 的低8bits。
+  * @note	MSB 表示汉字内码GBCode 的高8BOOLs。
+  *         LSB 表示汉字内码GBCode 的低8BOOLs。
   *         Line 表示在液晶的哪一行显示。
   *         Address 表示汉字或ASCII字符点阵在芯片中的字节地址。
   *         chDZ_Data是保存读出的点阵数据的数组。
   * @retval  size ：0：无 1:8*16 2：16*16中文 3:7*8  4：不等宽 x*16
   */
 
-
-static uchar GetData(ulong MSB, ulong LSB, uchar Type)
+static uint8 GetData(uint32 MSB, uint32 LSB, uint8 Type)
 {
-  ulong Address;
+  uint32 Address;
   // 中文
   if (MSB > 0x7e && Type == CHS15x16)
   {
@@ -309,8 +378,6 @@ static uchar GetData(ulong MSB, ulong LSB, uchar Type)
   }
 }
 
-#if 1
-
 /**
   * @brief  判断字模长度
   * @param   
@@ -319,7 +386,7 @@ static uchar GetData(ulong MSB, ulong LSB, uchar Type)
   * @note	
   * @retval  无
   */
-static uchar JudgeTheSize(ulong MSB, uchar Type)
+static uint8 JudgeTheSize(uint32 MSB, uint8 Type)
 {
   if ((MSB > 0x7e) && (Type < 1))
     return 16;
@@ -338,14 +405,17 @@ static uchar JudgeTheSize(ulong MSB, uchar Type)
   *     @arg Type: 文字类型 Type = 0:16X8 Type = 1;7X8
   *     @arg *chCode:显示数据
   *     @arg rev: 反向,2:数字位选 1：汉字全选 0:不选中
-  *     @arg bDisUnit:	0:不显示单位 1:显示单位			
+  *     @arg bDisUnit:	0:不显示单位 1:显示单位		
+  *     @arg chRevBit:	参数位选显示位，1-4为参数项内容 5-7为参数选项索引
+  *     @arg bBitIndexOrTemp:	0:参数选项内容  1:参数选项索引			
   * @note	一个中文字 WordsCount + 2,一个数字或字符 WordsCount + 1
   * @retval  无
   */
-void LCD_DisplayB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type, uchar *chCode, uchar rev, bit bDisUnit) //中文16*
+uint8 LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type,
+                   uint8 *chCode, uint8 rev, BOOL bDisUnit, uint8 chRevBit, uint8 bBitIndexOrTemp) //中文16*
 {
-  uchar chx, chy;
-  uchar chCount, chSize;
+  uint8 chx, chy;
+  uint8 chCount, chSize;
   chCount = 0;
   chSize = 0;
   chx = x;
@@ -386,14 +456,13 @@ void LCD_DisplayB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type, 
     if (rev == 2)
     {
       //参数位选功能 参数超100
-      // LCD_Dis(chx, chy, chSize, chDZ_Data, WordsCount - chCount == chIndexTempBit);
-      if (chIndexTempBit > 4 && bBitChangeIndexOrTemp == 1)
+      if (chRevBit > 4 && bBitIndexOrTemp == 1)
       {
-        LCD_Dis(chx, chy, chSize, chDZ_Data, WordsCount - chCount == (chIndexTempBit % 4));
+        LCD_Dis(chx, chy, chSize, chDZ_Data, WordsCount - chCount == (chRevBit % 4));
       }
-      else if (bBitChangeIndexOrTemp == 0)
+      else if (bBitIndexOrTemp == 0)
       {
-        LCD_Dis(chx, chy, chSize, chDZ_Data, WordsCount - chCount == chIndexTempBit);
+        LCD_Dis(chx, chy, chSize, chDZ_Data, WordsCount - chCount == chRevBit);
       }
     }
     else
@@ -406,12 +475,10 @@ void LCD_DisplayB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type, 
       if (chSize > 6)
       {
         chy += 16;
-        //chy += 2;
       }
       else
       {
         chy += 8;
-        //chy += 1;
       }
       chx = 0;
     }
@@ -430,8 +497,8 @@ void LCD_DisplayB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type, 
       chSize = 1;
     }
   }
+  return chStartx;
 }
-
 
 /**
   * @brief   显示数字等信息
@@ -443,44 +510,47 @@ void LCD_DisplayB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type, 
   *     @arg Type: 文字类型 Type = 0:16X8 Type = 1;7X8
   *     @arg *chNum:显示数据
   *     @arg rev: 反向
+  *     @arg chRevBit:	参数位选显示位，1-4为参数项内容 5-7为参数选项索引
+  *     @arg bBitIndexOrTemp:	0:参数选项内容  1:参数选项索引		
   * @note	一个中文字 WordsCount + 2,一个数字或字符 WordsCount + 1
   * @retval  无
   */
-void LCD_DisNumberB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type, long Number, uchar rev) // 数字
+uint8 LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,  \
+                     uint8 chRevBit, uint8 bBitIndexOrTemp) // 数字
 {
-  uchar chTemp = 0;
-  uchar chx, chy;
-  uchar chCount = 0, chSize = 0;
-  uchar chNew[6];
-  ulong chNum;
-  bit bNeg = 0;
-  uchar chCodeType = 0;
+  uint8 chTemp = 0;
+  uint8 chx, chy;
+  uint8 chCount = 0, chSize = 0;
+  uint8 chNew[6];
+  uint32 chNum;
+  BOOL bNeg = 0;
+  uint8 chCodeType = 0;
   switch (Type)
   {
-	  case 1:
-	  	  chCodeType = 5;
-		  break;
-	  case 2:
-	  case 3:
-	  case 4:
-	  	  chCodeType = 8;
-		  break;
-	  case 0:
-	  default:
-	  	  chCodeType = 0;
-		  break;
+  case 1:
+    chCodeType = 5;
+    break;
+  case 2:
+  case 3:
+  case 4:
+    chCodeType = 8;
+    break;
+  case 0:
+  default:
+    chCodeType = 0;
+    break;
   }
-  if(Number >= 0)
+  if (Number >= 0)
   {
-	chNum = (ulong)Number;
-	bNeg = 0;
+    chNum = (uint32)Number;
+    bNeg = 0;
   }
-  else if(Number < 0)
+  else if (Number < 0)
   {
-	chNum = (ulong)(-Number);
-	bNeg = 1;
+    chNum = (uint32)(-Number);
+    bNeg = 1;
   }
-  
+
   chx = x;
   chy = y;
 
@@ -506,54 +576,54 @@ void LCD_DisNumberB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type
     switch (chTemp)
     {
     case 5:
-      chNew[WordsCount - chTemp - 1] = (uchar)((chNum % 1000000) / 100000) + 48;
+      chNew[WordsCount - chTemp - 1] = (uint8)((chNum % 1000000) / 100000) + 48;
       break;
     case 4:
-      chNew[WordsCount - chTemp - 1] = (uchar)((chNum % 100000) / 10000) + 48;
+      chNew[WordsCount - chTemp - 1] = (uint8)((chNum % 100000) / 10000) + 48;
       break;
     case 3:
-      chNew[WordsCount - chTemp - 1] = (uchar)((chNum % 10000) / 1000) + 48;
+      chNew[WordsCount - chTemp - 1] = (uint8)((chNum % 10000) / 1000) + 48;
       break;
     case 2:
-      chNew[WordsCount - chTemp - 1] = (uchar)((chNum % 1000) / 100) + 48;
+      chNew[WordsCount - chTemp - 1] = (uint8)((chNum % 1000) / 100) + 48;
       break;
     case 1:
-      chNew[WordsCount - chTemp - 1] = (uchar)((chNum % 100) / 10) + 48;
+      chNew[WordsCount - chTemp - 1] = (uint8)((chNum % 100) / 10) + 48;
       break;
     case 0:
-      chNew[WordsCount - chTemp - 1] = (uchar)(chNum % 10) + 48;
+      chNew[WordsCount - chTemp - 1] = (uint8)(chNum % 10) + 48;
       break;
     default:
       break;
     }
   }
-  if(chSide == LEFT)
+  if (chSide == LEFT)
   {
-	if(bNeg == 1)
-  	{
-		LCD_DisplayB(x, y, 1, chSide, Type, "-", 0, 0);	
-		LCD_DisplayB(x + chCodeType, y, WordsCount, chSide, Type, chNew, rev, 0);
-	}
- 	else
- 	{
-		LCD_DisplayB(x, y, 1, chSide, Type, " ", 0, 0);
-		LCD_DisplayB(x, y, WordsCount, chSide, Type, chNew, rev, 0);
- 	}
-	
+    if (bNeg == 1)
+    {
+      LCD_Display(x, y, 1, chSide, Type, "-");
+      LCD_DisplayB(x + chCodeType, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+    }
+    else
+    {
+      LCD_Display(x, y, 1, chSide, Type, " ");
+      LCD_DisplayB(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+    }
   }
-  else if(chSide == RIGHT)
+  else if (chSide == RIGHT)
   {
-	if(bNeg == 1)
-  	{
-		LCD_DisplayB(x - chCodeType * WordsCount, y, 1, chSide, Type, "-", 0, 0);	
-	}
- 	else
- 	{
-		LCD_DisplayB(x - chCodeType * WordsCount, y, 1, chSide, Type, " ", 0, 0);
- 	}
-	LCD_DisplayB(x, y, WordsCount, chSide, Type, chNew, rev, 0);
+    if (bNeg == 1)
+    {
+      LCD_Display(x - chCodeType * WordsCount, y, 1, chSide, Type, "-");
+    }
+    else
+    {
+      LCD_Display(x - chCodeType * WordsCount, y, 1, chSide, Type, " ");
+    }
+    LCD_DisplayB(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
   }
   chStartx = LCDSizeX;
+  return chStartx;
 }
 
 //#if (DefLOCKSCREEN == 1)
@@ -569,9 +639,9 @@ void LCD_DisNumberB(uchar x, uchar y, uchar WordsCount, uchar chSide, uchar Type
   * @note	
   * @retval  无
   */
-void LCD_DisPicture(uchar x, uchar y, uchar WordsCount, uchar YCount, uchar chPointerAdd, uchar *chCode) // 特殊图标
+void LCD_DisPicture(uint8 x, uint8 y, uint8 WordsCount, uint8 YCount, uint8 chPointerAdd, uint8 *chCode) // 特殊图标
 {
-  uchar i, j, chColH, chColL, chPage;
+  uint8 i, j, chColH, chColL, chPage;
 
   // LCD_Dis(x,y,WordsCount,chCode,0);
   for (i = (y / 8); i < (YCount + (y / 8)); i++)
@@ -599,83 +669,3 @@ void LCD_DisPicture(uchar x, uchar y, uchar WordsCount, uchar YCount, uchar chPo
     }
   }
 }
-//#endif
-/**
-  * @brief   LCD清屏
-  * @param   
-  *     @arg chx1: 横坐标1
-  *     @arg chx2: 横坐标2
-  *     @arg chy1: 纵坐标1
-  *     @arg chy2: 纵坐标2
-  * @note	
-  * @retval  无
-  */
-void LCD_Clear(uchar chx1, uchar chx2, uchar chy1, uchar chy2)
-{
-  unsigned char i, chTemp, k;
-  unsigned char chColH, chColL;
-  chColH = chx1 + 4;
-  chColL = chColH & 0x0F;
-  chColH >>= 4;
-  chColH |= 0x10;
-  chy1 = chy1 / 8;
-  chy2 = chy2 / 8;
-  for (i = chy1; i < chy2; i++)
-  {
-    chTemp = 0xb0 + i;
-    LCD_Write(chTemp, 0); //将页地址共4页
-    LCD_Write(chColH, 0); //列高地址设置.
-    LCD_Write(chColL, 0); //列低地址设置.
-    for (k = chx1; k < chx2; k++)
-    {
-      LCD_Write(0x00, 1); //数据0
-    }
-  }
-}
-
-/**
-  * @brief  初始化 LCD，调整LCD显示对比度
-  * @param   
-  *     @arg chVoltage: 对比度
-  * @note	
-  * @retval  无
-  */
-
-void InitLCD(uchar chVoltage) // 初始化LCD
-{
-  uchar i;
-  LCD_CS1 = 0; // 选通芯片
-               //  LCD_RD  = 1;      // 读无效
-
-  LCD_RES = 0; // 硬件复位
-  Delay_Soft(20);
-  LCD_RES = 1; // 复位禁止
-  for (i = 0; i < 200; i++)
-  {
-    Delay_Soft(20);
-  }
-
-  LCD_Write(0xe2, 0);        //(14)software reset
-  LCD_Write(0xA2, 0);        //(11)bias select 0:1/9 1:1/7(at 1/65dyty)
-  LCD_Write(0xA0 | 0x01, 0); //(8)set scan direction of seg
-  LCD_Write(0xC0 | 0x08, 0); //(15)set output direction of com
-
-  LCD_Write(0x2c, 0);             //(16)built-in Booster On
-  LCD_Write(0x2e, 0);             //(16)Built-in Regulator ON
-  LCD_Write(0x2F, 0);             //(16)built-in Follower On
-  LCD_Write(0x24, 0);             //(15)对比度
-  LCD_Write(0x81, 0);             //(18)Double command
-  LCD_Write(0x20 | chVoltage, 0); //(18)微调对比度
-
-  LCD_Write(0xAF, 0); //(1)display on
-  LCD_Write(0x40, 0); // (2)set display start line0
-
-  LCD_Clear(0, 132, 0, 64);
-  bDisplayOn = 1;
-  bClearLCD = 1;
-  wTimeBack = 0;
-  LCD_CS1 = 1; //关片选
-}
-
-
-

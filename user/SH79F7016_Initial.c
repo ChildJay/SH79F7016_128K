@@ -1,3 +1,10 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: wang
+ * @Date: 2020-08-21 09:57:25
+ * @LastEditTime: 2020-08-22 13:33:36
+ * @LastEditors: Please set LastEditors
+ */
 /*=============================================================
 	±‡–¥’ﬂ£∫wangjie
  	±‡–¥ ±º‰£∫2020-8-20
@@ -37,7 +44,8 @@ void Sys_Initial(void)
 	Timer0_Init();	
 	//InitLCD_GPIO();	
 	InitSCI();		
-
+	InitLCD(4);
+	SPI_VoiceInit();
 	EA = 1;
 }
 
