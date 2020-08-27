@@ -2,11 +2,13 @@
  * @Description: 通讯信号处理
  * @Author: xph
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-04-16 14:29:21
+ * @LastEditTime: 2020-08-26 11:38:40
  * @LastEditors: Please set LastEditors
  */
 #include "Comm.h"
-
+xdata ulong wException = 0;		// 缝纫机最新异常
+xdata ulong wExceptionTemp = 0; // 缝纫机上一次异常缓存
+xdata ulong wExceptionBit = 0;  // 缝纫机异常标志位
 /***********************************************************
 // 功能：发送数组
 // 输入：无

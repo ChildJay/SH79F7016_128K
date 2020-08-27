@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2019-10-08 16:24:20
+ * @LastEditTime: 2020-08-27 10:45:54
  * @LastEditors: Please set LastEditors
  */
 #ifndef __FUN_DISPLAYANDVOICE_H
@@ -32,17 +32,14 @@ extern bit bClearFlag;
 extern uchar bClearLCD;
 
 #if (DefLOCKSCREEN == 1)
-
-typedef struct
-{
-	uchar bLockType : 1;
-	uchar chLockSetTime;
-	uint wLockTimeCount;
-} sLockPara;
-
-extern xdata sLockPara chLockScreen;
-void TestLockScreen(void);
-
+	typedef struct
+	{
+		uchar bLockType : 1;
+		uchar chLockSetTime;
+		uint wLockTimeCount;
+	} sLockPara;
+	extern xdata sLockPara chLockScreen;
+	void TestLockScreen(void);
 #endif
 
 void PlayBackExceptionInfo(void);
@@ -53,11 +50,12 @@ void TestException(void);
 
 
 #if (DefBreathLED == 1)
-void BreathingLED(void);
+	void BreathingLED(void);
 #endif
-#if (DefWorkStatus == 1)
 
-void TestVoiceStatus(void);
-void TestWorkStatus(void);
+#if (DefWorkStatus == 1)
+	void TestVoiceStatus(void);
+	void TestWorkStatus(void);
 #endif
+
 #endif

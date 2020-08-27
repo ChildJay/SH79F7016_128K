@@ -41,11 +41,13 @@ void Sys_Initial(void)
 	CLK_Init();				
 	GPIO_Init();
 	GPIO_FlashLED_Init();
+	KeyGPIOInit();
 	Timer0_Init();	
 	//InitLCD_GPIO();	
 	InitSCI();		
 	InitLCD(4);
 	SPI_VoiceInit();
+
 	EA = 1;
 }
 

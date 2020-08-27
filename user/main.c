@@ -2,7 +2,7 @@
  * @Description: MAIN
  * @Author: XPH
  * @Date: 2019-09-16 08:09:42
- * @LastEditTime: 2020-08-22 14:00:52
+ * @LastEditTime: 2020-08-27 10:13:17
  * @LastEditors: Please set LastEditors
  */
 #include "includes.h"
@@ -40,29 +40,25 @@ void main(void)
 	PLAYVOL(4);
 	PLAYBACK(2);
 
-	i = 0;
 	while(1)
 	{
+		#if (DefKEYLED == 1)
 		if (GetFlashLedTime())
         {
             ClearFlashLedTime();
-			if(i == 0)
-			{
-				P20_H();
-				P24_L();
-				i = 1;
-			}
-			else
-			{
-				P20_L();
-				P24_H();
-				i = 0;
-			}
+			Flash_LED();
 		}
+		#endif
 		if(Get20ms())
 		{
 			Clear20ms();
 			Chip_4_DataSend();
+		}
+		if (Get5Ms())
+        {
+            Clear5Ms();
+			ScanKey();
+			CountConKey();
 		}
 	}
 

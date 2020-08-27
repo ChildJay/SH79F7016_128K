@@ -4,6 +4,7 @@
 //#include "SH79F7016.h"
 #include "includes.h"
 #include "reg_it.h"
+#include "basic_api.h"
 
 #define LENGTHREAD 40
 #define LENGTHSEND 50

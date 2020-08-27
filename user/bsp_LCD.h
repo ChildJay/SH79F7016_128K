@@ -8,6 +8,8 @@
 #ifndef __BSP_LCD_H
 #define __BSP_LCD_H
 #include "reg_it.h"
+#include "basic_api.h"
+
 #define	SPI_Delay()		_nop_();_nop_();_nop_();_nop_();_nop_();   \
 						_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_()		//SPI通讯速率
 

@@ -7,8 +7,8 @@
  */
 #ifndef __BASIC_API_H
 #define __BASIC_API_H
+
 #include "reg_it.h"
-#include <intrins.h>
 
 #define DefBeepPWM 0         //0：IO 1：PWM
 #define DefSPISoftORHard 0   //0:软件 1：硬件
@@ -48,12 +48,10 @@
 #define VoiceDUOLE 5  	//多乐
 #define VoiceNORMAL 6  	//通用
 
-void Delay_Soft(uint16 i);
-void Delay_Soft_NOP(uint16 i);
-void Delay_200us(uint8 i);
 
 
-
-
+void Delay_Soft(unsigned int chTimeCount);
+void Delay_Soft_NOP(unsigned int chTimeCount);
+void Delay_200us(unsigned char chTimeCount);
 
 #endif

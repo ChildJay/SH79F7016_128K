@@ -2,7 +2,7 @@
  * @Description: ¹Ì¼þ¿â¶¨Òå
  * @Author: XPH
  * @Date: 2019-09-13 16:52:45
- * @LastEditTime: 2020-08-22 15:24:45
+ * @LastEditTime: 2020-08-26 11:38:03
  * @LastEditors: Please set LastEditors
  */
 #ifndef __REG_IT_H
@@ -33,6 +33,7 @@ typedef unsigned int uint;
 
 //typedef unsigned long U32;
 typedef unsigned long uint32;
+typedef unsigned long ulong;
 
 //typedef signed   char S8;
 typedef signed   char int8;

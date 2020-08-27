@@ -2,12 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: wang
  * @Date: 2020-08-21 09:57:25
- * @LastEditTime: 2020-08-22 13:37:17
+ * @LastEditTime: 2020-08-26 16:01:17
  * @LastEditors: Please set LastEditors
  */
 
 #include "SH79F7016_Interrupt.h"
-
+#include "includes.h"
 BOOL b200us = 0;
 
 xdata uint8 ch20ms = 0;
@@ -84,14 +84,14 @@ void Timer0_ISR(void) interrupt INTERRUPT_Timer0
     	}
 		
     }
-
+#if (DefKEYLED == 1)
 	lFlashLedTime++;
 	if (lFlashLedTime > 430)
 	{
 		lFlashLedTime = 0;
 		SetFlashLedTime();
-		//bLEDDelay = 1;
 	}
+#endif
     _pop_(INSCON); 
 }
 

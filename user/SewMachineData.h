@@ -8,7 +8,7 @@
 #ifndef __SEWMACHINEDATA_H
 #define __SEWMACHINEDATA_H
 #include "basic_api.h"
-
+#include "UserDefine.h"
 #define tblDataNum 128
 
 extern code uint8 tblMachine[10];
@@ -72,7 +72,7 @@ extern code LanguageDisplayMsg_Typedef HintDisplayMsg[];
 typedef struct
 {
 	uint8 ErrorCode;
-	ulong ErrorMask;
+	uint32 ErrorMask;
 	LanguageDisplayMsg_Typedef ErrorDis;
 
 }ErrorDisplayMsg_Typedef;

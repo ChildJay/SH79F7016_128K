@@ -6,35 +6,36 @@
  * @LastEditors: Please set LastEditors
  */
 #include "basic_api.h"
-extern BOOL b200us;
+#include "SH79F7016_Interrupt.h"
+
 
 /**
  * @description: Èí¼þÑÓ³Ùº¯Êý  
  * @param {type} i = 20;IICÑÓ³Ù
  * @return: 
  */
-void Delay_Soft(uint16 i)
+void Delay_Soft(unsigned int chTimeCount)
 {
-    while (i--)
-        ;
+    while (chTimeCount--)
+    {}
 }
 
-void Delay_Soft_NOP(uint16 i)
+void Delay_Soft_NOP(unsigned int chTimeCount)
 {
-    while (i--)
+    while (chTimeCount--)
     {
 		_nop_();
 	}
 }
 
-void Delay_200us(uint8 i)
+void Delay_200us(unsigned char chTimeCount)
 {	
- 	while(i)
+ 	while(chTimeCount)
  	{
-		if(b200us)
+		if(Get200us())
 		{
-			b200us = 0;
-			i--;
+			Clear200us();
+			chTimeCount--;
 		}
 	}
 }

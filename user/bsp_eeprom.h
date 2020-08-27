@@ -8,7 +8,7 @@
 #ifndef __BSP_EEPROM_H
 #define __BSP_EEPROM_H
 #include "reg_it.h"
-
+#include "basic_api.h"
 
 //类EEPROM存储区，00000H----00FFFH
 //每个扇区256字节，共16个扇区
