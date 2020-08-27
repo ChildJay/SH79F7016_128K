@@ -2,16 +2,14 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 11:32:28
+ * @LastEditTime: 2020-08-27 17:57:07
  * @LastEditors: Please set LastEditors
  */
 #ifndef __FUN_DISPLAYANDVOICE_H
 #define __FUN_DISPLAYANDVOICE_H
 #include "reg_it.h"
 #include "basic_api.h"
-#include "bsp_LCD.h"
-#include "SewMachineData.h"
-#include "UserDefine.h"
+#include "includes.h"
 
 #define DISSAVE 1
 #define DISBACK 2
@@ -50,7 +48,7 @@ void TestLockScreen(void);
 #endif
 
 #define LCD_DisplayB(x, y, WordsCount, chSide, Type, chCode, rev, bDisUnit) LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chCode, rev, bDisUnit, chIndexTempBit, bBitChangeIndexOrTemp)
-#define LCD_DisNumberB(x, y, WordsCount, chSide, Type, chNum, rev) LCD_DisNumberBasic(x, y, WordsCount, chSide, Type, chNum, rev, chIndexTempBit, bBitChangeIndexOrTemp)
+#define LCD_DisNumberB(x, y, WordsCount, chSide, Type, chNum, rev) LCD_DisNumberBasic(x, y, 4, chSide, Type, chNum, rev, chIndexTempBit, bBitChangeIndexOrTemp)
 
 void PlayBackExceptionInfo(void);
 void FirstExceptionDisplay(void);
@@ -66,5 +64,7 @@ void BreathingLED(void);
 void TestVoiceStatus(void);
 void TestWorkStatus(void);
 #endif
+
+void PowerOnVoice(void);
 
 #endif

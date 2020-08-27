@@ -2,15 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 10:12:11
+ * @LastEditTime: 2020-08-27 17:50:01
  * @LastEditors: Please set LastEditors
  */
 #include "fun_Key.h"
 #include "includes.h"
 
 xdata sKeyPara chKey = {DefKEYTYPE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //按键相关结构体初始值定义
-xdata uchar chSetMode = 1;
-xdata uchar chPowerOn = 0;
 //根据触摸芯片的反馈信号顺序 P-ZJB5-01 IIC通讯协议，将现在有的按键进行 编码顺序调整
 #define KeyNum 16 //按键个数
 
@@ -75,7 +73,7 @@ static void SetIICReadAddress(uchar chI2C_Addr)
   * @retval  无
   */
 
-void ScanKey()
+void ScanKey(void)
 {
 	uchar i;
 	uint dwKeytemp;
@@ -86,8 +84,8 @@ void ScanKey()
 	{
 		uint dwKeytempIIC;
 		dwKeytempIIC = 0; //IIC触摸按键键值缓存
-		//if (chPowerOn <= 10 && !((wException & E_POWEROFF) && (wCanSave == 0)) && chSetMode != 0)
-		if (chPowerOn <= 10 && !((wException & E_POWEROFF)) && chSetMode != 0)
+		if (chPowerOn <= 10 && !((wException & E_POWEROFF) && (wCanSave == 0)) && chSetMode != 0)
+		//if (chPowerOn <= 10 && !((wException & E_POWEROFF)) && chSetMode != 0)
 		{
 			if (!chKey.bTouchKeyConnect) //开机后第一次通讯时前，主芯片与触摸芯片之间的通讯未连接
 			{
@@ -594,7 +592,7 @@ void CountConKey(void)
 	}
 }
 
-#if 0
+#if 1
 /**
   * @brief  按键信息处理
   * @param   
@@ -636,10 +634,8 @@ void ProcessKey()
 		}
 		case K_RESET:
 		{
-
-			chHole = 0;
 			bPowerOn = 0;
-			SystemReset();
+			SystemReset(0);
 			chSetLength = LENGTH_SEW_A + LENGTH_SEW_B;
 			chSetMode = 2;
 			chIndex = LENGTH_SEW_A;
@@ -851,7 +847,7 @@ void ProcessKey()
 				PLAYBACK(35);
 				break;
 			}
-			case K_CLOTHSET2:
+			case K_CLOTHSETSINGLE:
 			{
 				if(ReadData(100)!= 0 && ReadData(101)!= 0 && ReadData(102)!= 0)
 				{
@@ -879,8 +875,7 @@ void ProcessKey()
 				}
 				else
 					chResetCount++;
-				chHole = 0;
-				SystemReset();
+				SystemReset(0);
 				chSetMode = 0;
 				break;
 			}
@@ -902,173 +897,6 @@ void ProcessKey()
 		{
 			switch (chKey.dwKey)
 			{
-			/*
-			case K_UP:
-			case K_DOWN:
-			{
-				switch (chIndexTempBit)
-				{
-				case 5:
-				{
-					if (chSetMode == 2)
-					{
-						if (chKey.dwKey == K_UP)
-						{
-							chIndex = IncPara(chIndex, chSetLength - 1, 0, 1);
-							PLAYBACK(13);
-						}
-						else
-						{
-							chIndex = DecPara(chIndex, chSetLength - 1, 0, 1);
-							PLAYBACK(14);
-						}
-					}
-					else if (chSetMode == 3)
-					{
-						if (chKey.dwKey == K_UP)
-						{
-							switch (chIndexB)
-							{
-							case 0:
-								chIndexC = IncPara(chIndexC, tbIndexList_0_MAX, 0, 1);
-								break;
-							case 1:
-								chIndexC = IncPara(chIndexC, tbIndexList_1_MAX, 0, 1);
-								break;
-							case 2:
-								chIndexC = IncPara(chIndexC, tbIndexList_2_MAX, 0, 1);
-								break;
-							case 3:
-								chIndexC = IncPara(chIndexC, tbIndexList_3_MAX, 0, 1);
-								break;
-							case 4:
-								chIndexC = IncPara(chIndexC, tbIndexList_4_MAX, 0, 1);
-								break;
-							case 5:
-								chIndexC = IncPara(chIndexC, tbIndexList_5_MAX, 0, 1);
-								break;
-							case 6:
-								chIndexC = IncPara(chIndexC, tbIndexList_6_MAX, 0, 1);
-								break;
-							case 7:
-								chIndexC = IncPara(chIndexC, tbIndexList_7_MAX, 0, 1);
-								break;
-							case 8:
-								chIndexC = IncPara(chIndexC, tbIndexList_8_MAX, 0, 1);
-								break;
-							default:
-								break;
-							}
-							PLAYBACK(13);
-						}
-						else
-						{
-							switch (chIndexB)
-							{
-							case 0:
-								chIndexC = DecPara(chIndexC, tbIndexList_0_MAX, 0, 1);
-								break;
-							case 1:
-								chIndexC = DecPara(chIndexC, tbIndexList_1_MAX, 0, 1);
-								break;
-							case 2:
-								chIndexC = DecPara(chIndexC, tbIndexList_2_MAX, 0, 1);
-								break;
-							case 3:
-								chIndexC = DecPara(chIndexC, tbIndexList_3_MAX, 0, 1);
-								break;
-							case 4:
-								chIndexC = DecPara(chIndexC, tbIndexList_4_MAX, 0, 1);
-								break;
-							case 5:
-								chIndexC = DecPara(chIndexC, tbIndexList_5_MAX, 0, 1);
-								break;
-							case 6:
-								chIndexC = DecPara(chIndexC, tbIndexList_6_MAX, 0, 1);
-								break;
-							case 7:
-								chIndexC = DecPara(chIndexC, tbIndexList_7_MAX, 0, 1);
-								break;
-							case 8:
-								chIndexC = DecPara(chIndexC, tbIndexList_8_MAX, 0, 1);
-								break;
-
-							default:
-								break;
-							}
-							PLAYBACK(14);
-						}
-
-						chIndex = tbIndexList[chIndexB][chIndexC];
-					}
-					wIndexTemp = ReadIndexTemp(chIndex);
-					//bClearLCD = 2;
-					break;
-				}
-				case 6:
-				{
-					if (chSetMode == 2)
-					{
-						if (chKey.dwKey == K_UP)
-						{
-							chIndex = IncPara(chIndex, chSetLength - 1, 0, 10);
-							PLAYBACK(13);
-						}
-						else
-						{
-							chIndex = DecPara(chIndex, chSetLength - 1, 0, 10);
-							PLAYBACK(14);
-						}
-					}
-					wIndexTemp = ReadIndexTemp(chIndex);
-					//bClearLCD = 2;
-					break;
-				}
-				case 7:
-				{
-					if (chSetMode == 2)
-					{
-						if (chKey.dwKey == K_UP)
-						{
-							chIndex = IncPara(chIndex, chSetLength - 1, 0, 100);
-							PLAYBACK(13);
-						}
-						else
-						{
-							chIndex = DecPara(chIndex, chSetLength - 1, 0, 100);
-							PLAYBACK(14);
-						}
-					}
-					wIndexTemp = ReadIndexTemp(chIndex);
-					//bClearLCD = 2;
-					break;
-				}
-				default:
-				{
-					if (chSetMode == 3)
-					{
-						chIndex = tbIndexList[chIndexB][chIndexC];
-					}
-					wIndexTemp = ChangeIndexTemp(chIndex, wIndexTemp);
-					//if (chSetMode == 6)
-					//{
-					//	bClearLCD = 0;
-					//}
-					//if (chIndex == 73)
-					//{
-					//	bClearLCD = 9;
-					//}
-					if (chKey.dwKey == K_UP)
-						PLAYBACK(9);
-					else
-						PLAYBACK(10);
-					break;
-				}
-				}
-
-				break;
-			}
-			*/
 			case K_UP:
 			case K_DOWN:
 			{
@@ -1389,28 +1217,7 @@ void ProcessKey()
 
 				break;
 			}
-			/*case K_UPLONG:
-			case K_DOWNLONG:
-			{
-				PKCON;
-				if (chIndex == 46)
-				{
-					if (bSubCount == 0 && chKey.dwKey == K_DOWNLONG)
-					{
-						wSewCount = 0;
-					}
-					else if (bSubCount == 1 && chKey.dwKey == K_UPLONG)
-					{
-						wSewCount = 9999;
-					}
-					WriteData(chIndex, wSewCount); // 存储
-				}
-				else
-				{
-					bClearLCD = 0;
-				}
-				break;
-			}*/
+
 			case K_RIGHT:
 			case K_LEFT:
 			{
@@ -1564,7 +1371,7 @@ void ProcessKey()
 					chIndex = tbIndexList[chIndexB][chIndexC];
 				//长按电眼键直接可以保存至用户默认参数，不需要先按S键 NEW
 				SaveIndexTemp(chIndex, wIndexTemp);
-				WriteDataB(chIndex, wIndexTemp, 1, 0);
+				WriteDataB(chIndex, wIndexTemp, 1);
 				chDisSaveFlag = DISSAVEDEFINE;
 				break;
 			}
@@ -2417,7 +2224,7 @@ void Flash_LED(void)
 	}
 	case 12:
 	{
-		LED_Reverse(K_CLOTHSET, 1);
+		LED_Reverse(K_CLOTHSETSINGLE, 1);
 		break;
 	}
 	case 13:

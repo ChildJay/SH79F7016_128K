@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: wang
  * @Date: 2020-08-21 09:57:25
- * @LastEditTime: 2020-08-22 13:33:36
+ * @LastEditTime: 2020-08-27 17:42:14
  * @LastEditors: Please set LastEditors
  */
 /*=============================================================
@@ -14,6 +14,7 @@
 
 #include "SH79F7016_Initial.h"
 
+/*
 uint8 idata chReadData[LENGTHREAD];
 uint8 idata chSendData[LENGTHSEND];
 
@@ -25,12 +26,13 @@ uint8 chSendHead;
 
 BOOL bBusy; // 串口处理忙
 BOOL bSend; // 串口发送标志位
+*/
 
 void CLK_Init(void);
 void GPIO_Init(void);
 void Timer0_Init(void);
 
-void InitSCI(void);
+//void InitSCI(void);
 void EUART0_Init(void);
 void InitLCD_GPIO(void);
 void GPIO_FlashLED_Init(void);
@@ -46,7 +48,9 @@ void Sys_Initial(void)
 	//InitLCD_GPIO();	
 	InitSCI();		
 	InitLCD(4);
+	InitSPI();
 	SPI_VoiceInit();
+	BuzzleInit();
 
 	EA = 1;
 }
@@ -136,7 +140,7 @@ void Timer0_Init(void)
 	TR1 = 1;//定时器1使能
 	EA = 1; 
 }
-
+/*
 #pragma optimize(8)	
 void InitSCI(void)
 {
@@ -149,6 +153,7 @@ void InitSCI(void)
 	bBusy = 0;
 	EUART0_Init();
 }
+*/
 #pragma optimize(8)	
 void EUART0_Init(void)
 {

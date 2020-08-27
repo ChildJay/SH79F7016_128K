@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 11:31:27
+ * @LastEditTime: 2020-08-27 17:02:43
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DisplayAndVoice.h"
@@ -2249,3 +2249,84 @@ void TestWorkStatus(void)
 		goto REFLASH_LED;
 	}
 }
+
+void PowerOnVoice(void)
+{
+	if (chPowerOn == 13)
+	{
+		if (PlayVoiceMCU == 1)
+		{
+			PLAYVOL(chVoiceVol);
+		}
+		else if (PlayVoiceMCU == 4)
+		{
+			PLAYVOL(chVoiceVol);
+			Delay_200us(10);
+		}
+	}
+	if (chPowerOn == 1 && PlayVoiceMCU != 4)
+	{
+		switch (ReadData(87))
+		{
+		case 8:
+			PLAYBACK(63);
+			break; //顺发中性 标准
+		case 7:
+			PLAYBACK(62);
+			break; //佳克
+		case 5:
+			PLAYBACK(61);
+			break; //汇宝
+		case 1:
+			PLAYBACK(1);
+			break; //永工
+		case 0:
+			PLAYBACK(0);
+			break; //顺发
+		default:
+			break;
+		}
+	}
+	else if (chPowerOn == 1 && PlayVoiceMCU == 4)
+	{
+		switch (chPoweronVoice)
+		{
+		case 1:
+			PLAYBACK(88);
+			break; //PAWA
+		case 2:
+			PLAYBACK(63);
+			break; //顺发中性 标准
+		case 3:
+			PLAYBACK(0);
+			break; //顺发
+		case 4:
+			PLAYBACK(1);
+			break; //永工
+		case 5:
+			PLAYBACK(61);
+			break; //汇宝
+		case 6:
+			PLAYBACK(62);
+			break; //佳克
+		case 7:
+			PLAYBACK(64);
+			break; //中捷
+		case 8:
+			PLAYBACK(65);
+			break; //贝斯曼
+		case 9:
+			PLAYBACK(66);
+			break; //好易
+		case 10:
+			PLAYBACK(67);
+			break; //中屹
+		case 11:
+			PLAYBACK(68);
+			break; //多乐
+		default:
+			break;
+		}
+	}
+}
+

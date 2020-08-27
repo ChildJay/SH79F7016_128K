@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2019-09-20 14:01:01
+ * @LastEditTime: 2020-08-27 17:21:20
  * @LastEditors: Please set LastEditors
  */
 #ifndef __FUN_DATAPROCESS_H
@@ -13,6 +13,7 @@
 #define Interface0 0
 #define Interface1_DisGeneral 1
 #define Interface2_Index 2
+#define Index_UserMachine 87
 
 #define JumpToMode_5_FastFunChange 5
 #define JumpToMode_4_ClothSet 4
@@ -30,9 +31,7 @@ extern bit bSensorFSW;
 
 extern uchar chMachine;
 extern uchar chMachine1;
-extern xdata uint wMaxSpeed;
-extern xdata uchar chLanguage;
-extern xdata uchar chLight;
+
 extern xdata uint chSensorF;
 extern xdata uint chSensorM;
 extern xdata uint chSensorB;
@@ -40,12 +39,12 @@ extern bit bSubCount;
 extern xdata uchar chCutCount;
 extern bit bDisedSewCount;
 extern xdata uint wAlarmCount;
-extern xdata uchar chInfrared;
+
 extern bit bCountOrder;
 extern xdata uint wLimitV;
 extern xdata uchar bCntValueStatus;
 
-//extern uint xdata wSetIndexTemp[128];//用户默认参数缓存
+
 typedef struct
 {
 	uint wSensorFIntensity;
@@ -69,8 +68,7 @@ extern uchar chIndexB;			//参数项序号 等级B
 extern uchar chIndexC;			//参数项序号 等级C
 extern xdata uchar chInfoIndex;
 extern uchar chSetLength;  // 参数上限
-extern uint wIndexTemp;	// 参数缓存
-extern xdata uchar chHole; //恢复出厂设置恢复等级缓存
+extern int wIndexTemp;	// 参数缓存
 extern bit bPowerOn;
 extern xdata uchar chSensor;
 extern xdata uint wTimeBack;  //页面跳转的剩余时间计数
@@ -79,6 +77,10 @@ extern xdata uchar chPowerOn;
 #define PowerOn()  \
 	if (chPowerOn) \
 	chPowerOn--
+#define DataSafeOperCountDown()  \
+		if (wCanSave > 0) \
+        wCanSave--
+
 extern xdata uchar chResetCount;
 extern bit bPassIdenti;
 extern xdata uint wCanSave;
@@ -93,21 +95,23 @@ extern xdata uchar chPoweronVoice;
 #define ClearTestTime() nTestTime = 0
 
 void GoToHome(void);
-uint IncPara(uint wData, uint wMax, uint wMin, uint chStep);
-uint DecPara(uint wData, uint wMax, uint wMin, uint chStep);
-void SaveAndSendData(uchar chIndex, uint wData);
-void SystemReset(void);
+int IncPara(int wData, int wMax, int wMin, int chStep);
+int DecPara(int wData, int wMax, int wMin, int chStep);
+void SaveAndSendData(uchar chIndex, int wData);
+void SystemReset(uchar chResetLevel);
 void ReadSewData(void);
-void ReadSetIndexTemp(void);
-void auto_clearEEprom(void);
+//void ReadSetIndexTemp(void);
+void ReadSetIndexTemp(uchar chResetLevel);
+//void auto_clearEEprom(void);
+void auto_clearEEprom(uchar chResetLevel);
 void JumpToPageData(uchar chSetModeX, uchar chIndexBX, uchar chIndexCX);
-uint ReadIndexTemp(uchar chIndexX);
+int ReadIndexTemp(uchar chIndexX);
 #if (DefONEKEYTEST == 1)
 void TestOneKeyTest(void);
 #endif
 void SaveIndexTemp(uchar chIndexX, uint wIndexTempX);
 void ReadDisPara(void);
-uint ChangeIndexRangeData(uchar chIndexX, uchar chindexRange);
-uint ChangeIndexTemp(uchar chIndexX, uint wIndexTempX);
+int ChangeIndexRangeData(uchar chIndexX, uchar chindexRange);
+int ChangeIndexTemp(uchar chIndexX, int wIndexTempX);
 void TestTimeBack(void);
 #endif

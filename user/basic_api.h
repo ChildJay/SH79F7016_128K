@@ -2,7 +2,7 @@
  * @Description: 基础通用API
  * @Author: XPH
  * @Date: 2019-09-14 08:14:32
- * @LastEditTime: 2020-08-22 15:25:32
+ * @LastEditTime: 2020-08-27 14:35:59
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BASIC_API_H
@@ -12,7 +12,7 @@
 
 #define DefBeepPWM 0         //0：IO 1：PWM
 #define DefSPISoftORHard 0   //0:软件 1：硬件
-
+#define DefBackToHome 0 //0:不会倒计时回到主界面，1：会倒计时回到主界面
 /*条件编译列表 0：不需要 1：需要*/
 #define DefONEKEYTEST 0 //一键测试模式 0：不需要 1：需要
 #define DefKEYTYPE 1    //按键类型 0：膜按键  1：触摸按键

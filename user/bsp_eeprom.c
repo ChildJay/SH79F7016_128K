@@ -2,7 +2,7 @@
  * @Description: 芯片内部数据存储(实际新茂芯片为flash)
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-04-16 13:47:38
+ * @LastEditTime: 2020-08-27 14:41:55
  * @LastEditors: Please set LastEditors
  */
 #include "bsp_eeprom.h"
@@ -11,111 +11,6 @@ xdata uint16 EEPROM_buffer[EEPROM_DATA_NUM]; //数据量较大，容易溢出
 
 uint16 xdata chParaIndivWrite[24];
 uint8 xdata chWriteIndivCount = 0;
-
-#if 0
-static unsigned char ssp_flag;
-/**
-  * @brief   EEPROM的页擦除
-  * @param   
-  *     @arg Block:片区
-  * @note	erase 256-Byte
-  * @retval  无
-  */
-void EEPROM_Page_Erase(unsigned char Block)
-{
-	ssp_flag = 0x55;
-	EA = 0;//禁止所有中断
-	FLASHCON = 1 ;//0：访问主存储器;1：访问 EEPROM 区和可读识别码
-
-	XPAGE = Block;  //类eeprom的页
-	if (ssp_flag==0x55)
-	{
-		IB_CON1	 = 0xE6 ;	  //表示擦除
-		IB_CON2	 = 0x05 ;
-		IB_CON3	 = 0x0A ;
-		IB_CON4	 = 0x09 ;
-		IB_CON5	 = 0x06 ;
-		_nop_() ;				
-		_nop_() ;
-		_nop_() ;
-		_nop_() ;
-	}
-	else
-	{
-		IB_CON2 = 0x00;
-	}
-	ssp_flag = 0;
-	XPAGE = 0x00;
-	FLASHCON = 0x00 ;
-	EA = 1;//开启所有中断
-}
-/**
-  * @brief   EEPROM写一个字节的数据
-  * @param   
-  *     @arg Addr:地址
-  *     @arg Data:数据
-  * @note	输入超过256的数据会自动偏移扇区，只需要输入扇区的起始地址即可
-  * @retval  无
-  */
-void EEPROM_Byte_Program(unsigned int Addr, unsigned char Data)
-{
-	ssp_flag = 0x55;
-	EA = 0;//禁止所有中断
-	FLASHCON = 1 ;//0：访问主存储器;1：访问 EEPROM 区和可读识别码
-
-	XPAGE = Addr >> 8;//类eeprom的页
-	IB_OFFSET = Addr & 0xff;//低地址
-	
-	IB_DATA = Data;//数据
-
-	if (ssp_flag==0x55)
-	{
-		IB_CON1	 = 0x6E ;//表示烧写
-		IB_CON2	 = 0x05 ;
-		IB_CON3	 = 0x0A ;
-		IB_CON4	 = 0x09 ;
-		IB_CON5	 = 0x06 ;//到此自动执行
-		_nop_() ;				
-		_nop_() ;
-		_nop_() ;
-		_nop_() ;
-	}
-	else
-	{
- 	 	IB_CON2=0;
-	}	
-	ssp_flag=0;
-	XPAGE = 0x00;
-	FLASHCON = 0x00 ;//0：访问主存储器;1：访问 EEPROM 区和可读识别码
-	EA = 1;//开启所有中断
-}
-/**
-  * @brief   读取EEPROM的数据
-  * @param   
-  *     @arg add_r:读取数据的地址
-  *     @arg *dat_r:数据缓存
-  *     @arg len_r:读取数据长度
-  * @note	输入超过256的数据会自动偏移扇区，输入扇区起始地址即可
-  * @retval  1
-  */
-unsigned char ReadEEPROM(unsigned int add_r, unsigned char *dat_r, unsigned char len_r)
-{
-	if(len_r == 0)
-		return (0);
-	EA = 0;//禁止所有中断
-	
-	while (len_r--) {
-		FLASHCON = 1 ;//0：访问主存储器;1：访问 EEPROM 区和可读识别码
-		dat_r = (uchar code *)(add_r);
-		dat_r++;
-		add_r++;
-		FLASHCON = 0x00 ;//0：访问主存储器;1：访问 EEPROM 区和可读识别码
-    }
-	
-	EA = 1;//开启所有中断
-    return (1);
-}
-#endif
 
 volatile unsigned char Ssp_Flag;
 #pragma optimize(8)	//不能删除，删除不能读写

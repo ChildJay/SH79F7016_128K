@@ -2,7 +2,7 @@
  * @Description: 头文件总览
  * @Author: xph
  * @Date: 2019-09-13 16:52:45
- * @LastEditTime: 2020-08-27 11:31:11
+ * @LastEditTime: 2020-08-27 14:04:59
  * @LastEditors: Please set LastEditors
  */
 #ifndef __INCLUDES_H
@@ -20,17 +20,6 @@
 #include "basic_api.h"
 #include "UserDefine.h"
 #include "fun_DisplayAndVoice.h"
-/*
-#include "bsp_pwm.h"
-
-#include "bsp_eeprom.h"
-#include "bsp_LCD.h"
-#include "bsp_timer.h"
-
-
-#include "Comm.h"
-
-
 #include "fun_DataProcess.h"
-*/
+
 #endif

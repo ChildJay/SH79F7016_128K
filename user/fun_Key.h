@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:16
- * @LastEditTime: 2020-08-26 16:15:28
+ * @LastEditTime: 2020-08-27 17:26:11
  * @LastEditors: Please set LastEditors
  */
 #ifndef __FUN_KEY_H
@@ -127,18 +127,13 @@ sbit P27_OUT = Key_GPIO_PORT ^ 7;
 #define K_RESET K_LEFT + K_RIGHT
 #define K_RESET1 K_LEFT + K_RIGHT + 1
 #define K_SET K_UP + K_DOWN
-#define K_CLOTHSET K_LIFT + K_P
+#define K_CLOTHSET K_VALUE + K_P
 #define K_ADMIN K_UP + K_RIGHT
-#define K_LIST K_P + K_UP
-#define K_VOICESWITCH 	K_P + K_RIGHT
 
 #define K_TEST K_CUT + K_MODE
 #define K_COUNT K_LIFT + K_CUT
 #define K_CLEAR K_DOWN + K_CUT
 
-#define K_TEST_T K_CUT + K_MODE  //触摸按键的复合组合键
-#define K_COUNT_T K_CUT + K_LIFT //触摸按键的复合组合键
-#define K_CLEAR_T K_DOWNLONG	 //触摸按键的复合组合键
 #define K_TESTVALUE_T K_MODE + K_LIFT	 //触摸按键的复合组合键
 
 
@@ -177,7 +172,7 @@ extern xdata uchar chTESTVALUE;
 void KeyGPIOInit(void);
 void ScanKey(void);
 void CountConKey(void);
-#if 0
+#if 1
 void ProcessKey(void);
 #endif
 #if (DefKEYLED == 1)
@@ -187,5 +182,5 @@ void Flash_LED(void);
 #if (DefSpeedLimitENABLE == 1)
 void TestValue(void);
 #endif
-
+uchar FindIndexC(uchar Length, uchar Index);
 #endif

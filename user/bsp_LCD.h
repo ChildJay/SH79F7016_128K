@@ -2,7 +2,7 @@
  * @Description: LCD点阵液晶显示
  * @Author: XPH
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-27 11:24:20
+ * @LastEditTime: 2020-08-27 14:42:42
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BSP_LCD_H
@@ -46,7 +46,7 @@ sbit CS_MCU    = P0^1;		   //MCU对应METER     CS
 #define LCDSizeX 128
 #define LCDSizeY 8
 
-
+extern xdata uint8 chStartx;
 
 sbit LCD_CS1 = P5 ^ 2;
 sbit LCD_RES = P5 ^ 1;

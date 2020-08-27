@@ -2,7 +2,7 @@
  * @Description: LCDµ„’Û“∫æßœ‘ æ
  * @Author: XPH
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-27 11:18:46
+ * @LastEditTime: 2020-08-27 11:49:52
  * @LastEditors: Please set LastEditors
  */
 
@@ -602,12 +602,12 @@ uint8 LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8
     if (bNeg == 1)
     {
       LCD_Display(x, y, 1, chSide, Type, "-");
-      LCD_DisplayB(x + chCodeType, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+      LCD_DisplayBasic(x + chCodeType, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
     }
     else
     {
       LCD_Display(x, y, 1, chSide, Type, " ");
-      LCD_DisplayB(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+      LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
     }
   }
   else if (chSide == RIGHT)
@@ -620,7 +620,7 @@ uint8 LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8
     {
       LCD_Display(x - chCodeType * WordsCount, y, 1, chSide, Type, " ");
     }
-    LCD_DisplayB(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+    LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
   }
   chStartx = LCDSizeX;
   return chStartx;

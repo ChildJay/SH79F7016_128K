@@ -2,7 +2,7 @@
  * @Description: 语音播放功能
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-22 15:26:05
+ * @LastEditTime: 2020-08-27 14:39:48
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BSP_VOICE_H
@@ -28,6 +28,7 @@ sbit SPI_RDY = P7 ^ 7;
 
 
 extern BOOL RDY_temp;
+extern xdata uint8 chVoicePlayedBef; //播放的前一个语音
 
 extern xdata uint8 PlayVoiceMCU; //P90语音芯片类型 0：ISD 1：UT600D 2:中捷专业UT600D 3：无语音芯片 4:3国语言语音芯片
 extern xdata uint8 chVoiceVol;   //P86语音音量大小
