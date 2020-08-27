@@ -2,7 +2,7 @@
  * @Description: 头文件总览
  * @Author: xph
  * @Date: 2019-09-13 16:52:45
- * @LastEditTime: 2020-08-25 17:51:27
+ * @LastEditTime: 2020-08-27 11:31:11
  * @LastEditors: Please set LastEditors
  */
 #ifndef __INCLUDES_H
@@ -19,7 +19,7 @@
 #include "SewMachineData.h"
 #include "basic_api.h"
 #include "UserDefine.h"
-
+#include "fun_DisplayAndVoice.h"
 /*
 #include "bsp_pwm.h"
 
@@ -30,7 +30,7 @@
 
 #include "Comm.h"
 
-#include "fun_DisplayAndVoice.h"
+
 #include "fun_DataProcess.h"
 */
 #endif

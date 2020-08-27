@@ -2,7 +2,7 @@
  * @Description: LCD点阵液晶显示
  * @Author: XPH
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-22 11:28:15
+ * @LastEditTime: 2020-08-27 11:18:46
  * @LastEditors: Please set LastEditors
  */
 
@@ -11,7 +11,7 @@
 xdata uint8 chDZ_Data[34]; //用于保存读出的点阵数据的数组
 
 xdata uint8 chStartx = 0; //显示数据起始位置-x，主要是为了给靠右显示时，存在单位的参数使用，如：xxxx转/分
-//BOOL bBitChangeIndexOrTemp = 0; //用于判断位选功能在参数还是选项之间切换 1在参数序号 0在参数选项
+
 
 void InitLCD_GPIO(void)
 {
@@ -411,7 +411,7 @@ static uint8 JudgeTheSize(uint32 MSB, uint8 Type)
   * @note	一个中文字 WordsCount + 2,一个数字或字符 WordsCount + 1
   * @retval  无
   */
-uint8 LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type,
+uint8 LCD_DisplayBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type,
                    uint8 *chCode, uint8 rev, BOOL bDisUnit, uint8 chRevBit, uint8 bBitIndexOrTemp) //中文16*
 {
   uint8 chx, chy;
@@ -515,7 +515,7 @@ uint8 LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type,
   * @note	一个中文字 WordsCount + 2,一个数字或字符 WordsCount + 1
   * @retval  无
   */
-uint8 LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,  \
+uint8 LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,  \
                      uint8 chRevBit, uint8 bBitIndexOrTemp) // 数字
 {
   uint8 chTemp = 0;

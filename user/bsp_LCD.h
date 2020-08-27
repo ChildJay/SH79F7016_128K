@@ -2,7 +2,7 @@
  * @Description: LCD点阵液晶显示
  * @Author: XPH
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-22 11:27:42
+ * @LastEditTime: 2020-08-27 11:24:20
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BSP_LCD_H
@@ -72,14 +72,14 @@ sbit LCD_SDA = P3 ^ 5;
 
 void InitSPI(void);
 
-uint8 LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, \
+uint8 LCD_DisplayBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, \
                     uint8 *chCode, uint8 rev, BOOL bDisUnit,uint8 chRevBit,uint8 bBitIndexOrTemp);
 //用来显示不被反向显示的中文
-#define LCD_Display(x, y, WordsCount, chSide, Type, chCode)  LCD_DisplayB(x, y, WordsCount, chSide, Type, chCode, 0,0,0,0) 
+#define LCD_Display(x, y, WordsCount, chSide, Type, chCode)  LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chCode, 0,0,0,0) 
 
-uint8 LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,  \
+uint8 LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,  \
                      uint8 chRevBit, uint8 bBitIndexOrTemp);
-#define LCD_DisNumber(x, y, WordsCount, chSide, Type, chNum) LCD_DisNumberB(x, y, 4, chSide, Type, chNum, 2, 0, 0) //用来显示4位数字
+#define LCD_DisNumber(x, y, WordsCount, chSide, Type, chNum) LCD_DisNumberBasic(x, y, WordsCount, chSide, Type, chNum, 2, 0, 0) //用来显示4位数字
 
 void LCD_DisPicture(uint8 x, uint8 y, uint8 WordsCount,uint8 YCount,uint8 chPointerAdd, uint8* chCode);
 

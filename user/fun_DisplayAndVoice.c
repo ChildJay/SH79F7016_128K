@@ -2,11 +2,11 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 10:46:05
+ * @LastEditTime: 2020-08-27 11:31:27
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DisplayAndVoice.h"
-#include "includes.h"
+
 #if (DefLOCKSCREEN == 1)
 //锁屏点阵图标
 code uint8 chLockFrame[26] = {0xC0, 0X40, 0X7C, 0X7E, 0X46, 0X43, 0X43, 0X43, 0X46, 0X7E, 0X7C, 0X40, 0XC0,
@@ -15,10 +15,14 @@ xdata sLockPara chLockScreen = {0, 0, 0};
 #endif
 xdata uint8 chFirstNoConnectionDis = 0; //第一次通讯异常报警
 bit bFirstExceptionDis = 0;				//第一次报错计数，为了使在其他界面下，也能退回主界面优先显示报警信息
-xdata uint8 chDisSaveFlag = 0;
-bit bDisplayOn = 0; //显示标志
-bit bClearFlag = 0;
-uint8 bClearLCD = 1;
+xdata uint8 chDisSaveFlag = 0;//意识与显示
+bit bDisplayOn = 0; //显示标志位
+bit bClearFlag = 0;//清屏标志位
+uint8 bClearLCD = 1;//清除的屏幕部位
+
+BOOL bBitChangeIndexOrTemp = 0; //用于判断位选功能在参数还是选项之间切换 1在参数序号 0在参数选项
+xdata uint8 chIndexTempBit = 0;			  //位选位号参数
+xdata uint8 chIndexTempBitMAX = 0;	//参数位选功能，相应选项参数的最高位
 
 #if (DefBreathLED == 1)
 //呼吸灯相关
