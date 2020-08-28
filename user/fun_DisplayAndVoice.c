@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 17:02:43
+ * @LastEditTime: 2020-08-28 10:50:12
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DisplayAndVoice.h"
@@ -32,12 +32,22 @@ bit bBright;				 //呼吸灯点亮
 #endif
 
 
+void LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, uint8 *chCode, uint8 rev, BOOL bDisUnit) 
+{
+	LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chCode, rev, bDisUnit, chIndexTempBit, bBitChangeIndexOrTemp);
+}
+void LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev) 
+{
+	LCD_DisNumberBasic(x, y, WordsCount, chSide, Type, Number, rev, chIndexTempBit, bBitChangeIndexOrTemp);
+}
+
+
 /**
   * @brief   用于display()函数中重复显示的内容，单位
   * @param   
   * @note	 Dis_what: 1:开启关闭 2:ms 3:转/分 4针 
   *          5：度  6：关闭开启 7:（100ms） 8:运行停止 9:%
-  * @retval  
+  * @retval  0:显示单位 1：显示选项
   */
 uint8 Display_Unit(uint8 dis_X, uint8 dis_Y, uint8 dis_Index, bit Dis_BitPiont)
 {
@@ -482,43 +492,6 @@ void Display(void)
 			}
 			LCD_Display(strDisX, 24, strlength , LEFT, CHS15x16, HintDisplayMsg[chDisSaveFlag].Chinese);
 			
-				/*
-			switch (chDisSaveFlag)
-			{
-			case DISSAVE:
-				LCD_Display(44, 24, 5, LEFT, CHS15x16, "保 存");
-				break;
-			case DISBACK:
-				LCD_Display(44, 24, 5, LEFT, CHS15x16, "返 回");
-				break;
-			case DISSAVEDEFINE:
-				LCD_Display(0, 24, 16, LEFT, CHS15x16, "保存为用户默认值");
-				break;
-			case DISPASSWORDERROR:
-				LCD_Display(20, 24, 11, LEFT, CHS15x16, "密 码 错 误");
-				break;
-			case DISRESET:
-				LCD_Display(16, 24, 12, LEFT, CHS15x16, "恢复出厂设置");
-				break;
-			case DISSETSENSOR:
-				LCD_Display(16, 24, 12, LEFT, CHS15x16, "布料识别模式");
-				break;
-			case DISSETINDEX:
-				LCD_Display(20, 24, 11, LEFT, CHS15x16, "参 数 模 式");
-				break;
-			case DISENCODE:
-				LCD_Display(8, 24, 14, LEFT, CHS15x16, "读取编码器角度");
-				break;
-			case DISPASSWORDTRUE:
-				LCD_Display(8, 24, 14, LEFT, CHS15x16, "已获取高级权限");
-				break;
-			case DISCANCELLOCK:
-				LCD_Display(64-36, 16, 9, LEFT, CHS15x16, "请短按P键");
-				LCD_Display(64-32, 32, 8, LEFT, CHS15x16, "解除锁屏");
-				break;
-			default:
-				break;
-			}*/
 			
 		}
 		else if (chLanguage == 0)
@@ -535,43 +508,6 @@ void Display(void)
 				strDisX = 64 - strlength/2*8 - strlength%2*4;
 			}
 			LCD_Display(strDisX, 24, strlength , LEFT, Uni8x16, HintDisplayMsg[chDisSaveFlag].English);
-			/*
-			switch (chDisSaveFlag)
-			{
-			case DISSAVE:
-				LCD_Display(48, 24, 4, LEFT, EN8x16, "SAVE");
-				break;
-			case DISBACK:
-				LCD_Display(40, 24, 6, LEFT, EN8x16, "RETURN");
-				break;
-			case DISSAVEDEFINE:
-				LCD_Display(0, 24, 16, LEFT, EN8x16, "SAVE TO DEFAULTS");
-				break;
-			case DISPASSWORDERROR:
-				LCD_Display(8, 24, 14, LEFT, EN8x16, "PASSWORD ERROR");
-				break;
-			case DISRESET:
-				LCD_Display(44, 24, 5, LEFT, EN8x16, "RESET");
-				break;
-			case DISSETSENSOR:
-				LCD_Display(0, 24, 16, LEFT, EN8x16, "RECOGNITION MODE");
-				break;
-			case DISSETINDEX:
-				LCD_Display(8, 24, 14, LEFT, EN8x16, "PARAMETER MODE");
-				break;
-			case DISENCODE:
-				LCD_Display(24, 24, 10, LEFT, EN8x16, "READ ANGLE");
-				break;
-			case DISPASSWORDTRUE:
-				LCD_Display(8, 24, 14, LEFT, EN8x16, "ACCESS ENABLED");
-				break;
-			case DISCANCELLOCK:
-				LCD_Display(64-64, 16, 17, LEFT, EN8x16, "PRESS P TO CANCEL");
-				LCD_Display(64-60, 32, 15, LEFT, EN8x16, "THE LOCK SCREEN");
-				break;
-			default:
-				break;
-			}*/
 			
 		}
 		else if(chLanguage == 2)
@@ -588,42 +524,6 @@ void Display(void)
 				strDisX = 64 - strlength/2*5 - strlength%2*2;
 			}
 			LCD_Display(strDisX, 24, strlength , LEFT, TR5x7, HintDisplayMsg[chDisSaveFlag].Turkey);
-			/*
-			switch (chDisSaveFlag)
-			{
-			case DISSAVE:
-				LCD_Display(49, 24, 6, LEFT, TR5x7, "Kaydet");
-				break;
-			case DISBACK:
-				LCD_Display(50, 24, 5, LEFT, TR5x7, "d\x0f6n\x0fc\x0fe");
-				break;
-			case DISSAVEDEFINE:
-				LCD_Display(5, 24, 35, LEFT, TR5x7, "Kullan\x0fdc\x0fd varsay\x0fdlan\x0fd olarak kaydet");
-				break;
-			case DISPASSWORDERROR:
-				LCD_Display(34, 24, 12, LEFT, TR5x7, "Yanl\x0fd\x0fe \x0feifre");
-				break;
-			case DISRESET:
-				LCD_Display(6, 24, 28, LEFT, TR5x7, "Fabrika ayarlar\x0fdna s\x0fdf\x0fdrlama");
-				break;
-			case DISSETSENSOR:
-				LCD_Display(0, 24, 17, LEFT, TR5x7, "Kuma\x0fe tan\x0fdma modu");
-				break;
-			case DISSETINDEX:
-				LCD_Display(29, 24, 14, LEFT, TR5x7, "Parametre modu");
-				break;
-			case DISENCODE:
-				LCD_Display(39, 24, 11, LEFT, TR5x7, "Okuma a\x0e7\x0fds\x0fd");
-				break;
-			case DISPASSWORDTRUE:
-				LCD_Display(0, 24, 20, LEFT, TR5x7, "Geli\x0femi\x0fe izin al\x0fdnd\x0fd");
-				break;
-			case DISCANCELLOCK:
-				LCD_Display(0, 24, 32, LEFT, TR5x7, "Kilidi a\x0e7mak i\x0e7in P tu\x0feuna bas\x0fdn");
-				break;
-			default:
-				break;
-			}*/
 			
 		}
 		}
@@ -632,11 +532,6 @@ void Display(void)
 	}
 	else
 	{
-		/*if (bClearFlag)
-		{
-			bClearFlag = 0;
-			LCD_Display(0, 24, 16, 0, 2, "                ");
-		}*/
 		switch (chSetMode)
 		{
 		case 0:
@@ -676,8 +571,15 @@ void Display(void)
 			break;
 		}
 		case 1:
+		case 8:
 		{
 			
+			#if (DefLOCKSCREEN == 1)
+			if (chLockScreen.bLockType == 1 && chSetMode == 8)
+			{
+				LCD_DisPicture(128 - 15, 16, 13, 2, 0, chLockFrame);
+			}
+			#endif
 			if ((chCommState == 2 || chCommState == 5 || chCommState == 3) && (bTimeOutF == 0))
 			{
 				chFirstNoConnectionDis = 0;
@@ -1133,19 +1035,19 @@ void Display(void)
 		switch (chMachine)
 		{
 			case 0:
-				if(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != "0")
+				if(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != '0')
 				{
 					bParaDisNumorString = Display_Unit(128,chP_xxY,chIndexT,bIndexBitPiont);
 				}
 				break;
 			case 1:
-				if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != "0")
+				if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '0')
 				{
 					bParaDisNumorString = Display_Unit(128,chP_xxY,chIndexT,bIndexBitPiont);
 				}
 				break;
 			case 2:
-				if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != "0")
+				if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '0')
 				{
 					bParaDisNumorString = Display_Unit(128,chP_xxY,chIndexT,bIndexBitPiont);
 				}
@@ -1161,7 +1063,7 @@ void Display(void)
 					switch (chMachine)
 				{
 					case 0://横刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM0.English != "0")
+						if(ParaDisplayMsg[chIndexT].ParaDisM0.English != '0')
 						{
 							LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English)\
 								,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM0.English);
@@ -1173,9 +1075,9 @@ void Display(void)
 						}
 						break;
 					case 1://侧刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM1.English != "0")
+						if(ParaDisplayMsg[chIndexT].ParaDisM1.English != '0')
 						{
-							if(ParaDisplayMsg[chIndexT].ParaDisM1.English != "1")
+							if(ParaDisplayMsg[chIndexT].ParaDisM1.English != '1')
 								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM1.English)\
 									,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM1.English);
 							else
@@ -1189,9 +1091,9 @@ void Display(void)
 						}
 						break;
 					case 2://倒回缝
-						if(ParaDisplayMsg[chIndexT].ParaDisM2.English != "0")
+						if(ParaDisplayMsg[chIndexT].ParaDisM2.English != '0')
 						{
-							if(ParaDisplayMsg[chIndexT].ParaDisM2.English != "1")
+							if(ParaDisplayMsg[chIndexT].ParaDisM2.English != '1')
 								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM2.English)\
 									,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM2.English);
 							else
@@ -1275,7 +1177,7 @@ void Display(void)
 					switch (chMachine)
 					{
 						case 0://横刀
-							if(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != "0")
+							if(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != '0')
 							{	
 								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese)\
 									,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
@@ -1288,9 +1190,9 @@ void Display(void)
 							
 							break;
 						case 1://侧刀
-							if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != "0")
+							if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '0')
 							{	
-								if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != "1")
+								if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '1')
 									LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese)\
 										,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM1.Chinese);
 								else
@@ -1304,9 +1206,9 @@ void Display(void)
 							}
 							break;
 						case 2://倒回缝
-							if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != "0")
+							if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '0')
 							{	
-								if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != "1")
+								if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '1')
 									LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese)\
 										,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM2.Chinese);
 								else
@@ -1390,7 +1292,7 @@ void Display(void)
 				switch (chMachine)
 				{
 					case 0://横刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey != "0")
+						if(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey != '0')
 						{	
 							LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey)\
 								,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
@@ -1402,9 +1304,9 @@ void Display(void)
 						}
 						break;
 					case 1://侧刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != "0")
+						if(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != '0')
 						{	
-							if(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != "1")
+							if(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != '1')
 								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey)\
 									,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM1.Turkey);
 							else
@@ -1418,9 +1320,9 @@ void Display(void)
 						}
 						break;
 					case 2://倒回缝
-						if(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != "0")
+						if(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != '0')
 						{	
-							if(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != "1")
+							if(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != '1')
 								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey)\
 									,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM2.Turkey);
 							else
@@ -1951,7 +1853,7 @@ void Display(void)
 			{
 				LCD_Display(5, 8, 20, LEFT, TR5x7, "L\x0fctfen \x0feifreyi girin");
 			}
-			LCD_DisNumber(48, 40, 4, LEFT, EN8x16, wIndexTemp);
+			LCD_DisNumberB(48, 40, 4, LEFT, EN8x16, wIndexTemp, 2);
 			break;
 		}
 		case 7: //件数报警
@@ -2252,18 +2154,17 @@ void TestWorkStatus(void)
 
 void PowerOnVoice(void)
 {
-	if (chPowerOn == 13)
-	{
-		if (PlayVoiceMCU == 1)
-		{
-			PLAYVOL(chVoiceVol);
-		}
-		else if (PlayVoiceMCU == 4)
-		{
-			PLAYVOL(chVoiceVol);
-			Delay_200us(10);
-		}
-	}
+	// if (chPowerOn == 13)
+	// {
+	// 	if (PlayVoiceMCU == 1)
+	// 	{
+	// 		PLAYVOL(chVoiceVol);
+	// 	}
+	// 	else if (PlayVoiceMCU == 4)
+	// 	{
+	// 		PLAYVOL(chVoiceVol);
+	// 	}
+	// }
 	if (chPowerOn == 1 && PlayVoiceMCU != 4)
 	{
 		switch (ReadData(87))

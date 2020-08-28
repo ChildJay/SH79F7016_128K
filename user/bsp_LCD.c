@@ -2,7 +2,7 @@
  * @Description: LCD点阵液晶显示
  * @Author: XPH
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-27 11:49:52
+ * @LastEditTime: 2020-08-28 10:12:17
  * @LastEditors: Please set LastEditors
  */
 
@@ -11,7 +11,6 @@
 xdata uint8 chDZ_Data[34]; //用于保存读出的点阵数据的数组
 
 xdata uint8 chStartx = 0; //显示数据起始位置-x，主要是为了给靠右显示时，存在单位的参数使用，如：xxxx转/分
-
 
 void InitLCD_GPIO(void)
 {
@@ -364,6 +363,11 @@ static uint8 GetData(uint32 MSB, uint32 LSB, uint8 Type)
       SPIReadByte(Address, 16, chDZ_Data);
       return 8;
       break;
+    case 3:
+      Address = (MSB - 0x20) * 16 + 6336; // 8X16 拉丁文字符(字符及英文字母区)
+      SPIReadByte(Address, 16, chDZ_Data);
+      return 8;
+      break;
     case 4:
       if ((MSB >= 0x20) && (MSB <= 0x7e))
       {
@@ -411,8 +415,8 @@ static uint8 JudgeTheSize(uint32 MSB, uint8 Type)
   * @note	一个中文字 WordsCount + 2,一个数字或字符 WordsCount + 1
   * @retval  无
   */
-uint8 LCD_DisplayBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type,
-                   uint8 *chCode, uint8 rev, BOOL bDisUnit, uint8 chRevBit, uint8 bBitIndexOrTemp) //中文16*
+void LCD_DisplayBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type,
+                      uint8 *chCode, uint8 rev, BOOL bDisUnit, uint8 chRevBit, uint8 bBitIndexOrTemp) //中文16*
 {
   uint8 chx, chy;
   uint8 chCount, chSize;
@@ -497,7 +501,7 @@ uint8 LCD_DisplayBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 T
       chSize = 1;
     }
   }
-  return chStartx;
+  //   return chStartx;
 }
 
 /**
@@ -515,8 +519,8 @@ uint8 LCD_DisplayBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 T
   * @note	一个中文字 WordsCount + 2,一个数字或字符 WordsCount + 1
   * @retval  无
   */
-uint8 LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,  \
-                     uint8 chRevBit, uint8 bBitIndexOrTemp) // 数字
+void LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev,
+                        uint8 chRevBit, uint8 bBitIndexOrTemp) // 数字
 {
   uint8 chTemp = 0;
   uint8 chx, chy;
@@ -601,29 +605,29 @@ uint8 LCD_DisNumberBasic(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8
   {
     if (bNeg == 1)
     {
-      LCD_Display(x, y, 1, chSide, Type, "-");
-      LCD_DisplayBasic(x + chCodeType, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+      LCD_Display(chx, chy, 1, chSide, Type, "-");
+      LCD_DisplayBasic(chx + chCodeType, chy, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
     }
     else
     {
-      LCD_Display(x, y, 1, chSide, Type, " ");
-      LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+      LCD_Display(chx, chy, 1, chSide, Type, " ");
+      LCD_DisplayBasic(chx, chy, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
     }
   }
   else if (chSide == RIGHT)
   {
     if (bNeg == 1)
     {
-      LCD_Display(x - chCodeType * WordsCount, y, 1, chSide, Type, "-");
+      LCD_Display(chx - chCodeType * WordsCount, chy, 1, chSide, Type, "-");
     }
     else
     {
-      LCD_Display(x - chCodeType * WordsCount, y, 1, chSide, Type, " ");
+      LCD_Display(chx - chCodeType * WordsCount, chy, 1, chSide, Type, " ");
     }
-    LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
+    LCD_DisplayBasic(chx, chy, WordsCount, chSide, Type, chNew, rev, 0, chRevBit, bBitIndexOrTemp);
   }
   chStartx = LCDSizeX;
-  return chStartx;
+  // return chStartx;
 }
 
 //#if (DefLOCKSCREEN == 1)

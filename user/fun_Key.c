@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 17:50:01
+ * @LastEditTime: 2020-08-28 11:12:05
  * @LastEditors: Please set LastEditors
  */
 #include "fun_Key.h"
@@ -79,7 +79,7 @@ void ScanKey(void)
 	uint dwKeytemp;
 	KEY_RESET = 1;
 	dwKeytemp = 0;
-	
+
 	if (chKey.bKeyType == 1)
 	{
 		uint dwKeytempIIC;
@@ -144,7 +144,7 @@ void ScanKey(void)
 	{
 		if (chPowerOn <= 10 && !((wException & E_POWEROFF)) && chSetMode != 0)
 		{
-			uint8 key_buffer,temp;
+			uint8 key_buffer, temp;
 			temp = 0x10;
 			for (i = 0; i < 4; i++)
 			{
@@ -168,7 +168,7 @@ void ScanKey(void)
 				if ((key_buffer & 0x08) == 0) //该行通道的第四列有按键按下
 					dwKeytemp |= (1 << 3);
 			}
-		}	
+		}
 		else
 			dwKeytemp = 0;
 		if (chKey.dwKey1 != dwKeytemp)
@@ -196,22 +196,39 @@ void ScanKey(void)
 	if (chSetMode == 1)
 	{
 
+		if (chKey.dwKey1 == K_CLOTHSETSINGLE)
+		{
+			if (chKey.chTime3 > chTouchKeyScanTime * 2 && chKey.bKeyPress == 0)
+			{
+				chKey.chTime3 = 0;
+				chKey.dwKey1 = K_CLOTHSETSINGLE;
+				chKey.chKeyIndex = 1;
+				goto KEY;
+			}
+			if (chKey.chKeyIndex == 0)
+			{
+				if (chKey.chTime3 > KEYScanTime)
+				{
+					chKey.chKeyIndex = 12;
+				}
+			}
+			return;
+		}
 		//模式键，在界面模式1中才有长按键判定
 		if (chKey.dwKey1 == K_MODE)
 		{
 			//长按键判定，长按判定为WIN
 			if (chKey.chTime3 > chTouchKeyScanTime && chKey.bKeyPress == 0) //在此后面与上chKey.chKeyIndex == 0表示长按键只有在此之前没有按键按下时才会被判定
 			{
-				chKey.chTime3 = 0; //触摸按键将mode与win键进行了组合，长按键调整为短按WIN的效果，此处为了减少对代码的改动量进行了一下处理
-				//chKey.dwKey1 = K_MODELONG;
-				//chKey.dwKey1 = K_WIN;
-				chKey.chKeyIndex = 11;
-				goto TOUCHLONGKEY; //通过复用短按键的处理，去实现代码量的减少
+				chKey.chTime3 = 0;
+				chKey.dwKey1 = K_MODELONG;
+				chKey.chKeyIndex = 1;
+				goto KEY;
 			}
 			//短按，按键按下后松起才处理，判定为MODE
 			if (chKey.chKeyIndex == 0)
 			{
-				if (chKey.chTime3 > 2)
+				if (chKey.chTime3 > KEYScanTime)
 				{
 					chKey.chKeyIndex = 2;
 				}
@@ -224,18 +241,35 @@ void ScanKey(void)
 			//长按键判定，长按判定为RCUT
 			if (chKey.chTime3 > chTouchKeyScanTime && chKey.bKeyPress == 0) //在此后面与上chKey.bKeyPress == 0表示长按键只有在此之前没有按键按下时才会被判定
 			{
-				chKey.chTime3 = 0; //触摸按键将mode与win键进行了组合，长按键调整为短按WIN的效果，此处为了减少对代码的改动量进行了一下处理
-				//chKey.dwKey1 = K_CUTLONG;
-				//chKey.dwKey1 = K_RCUT;
-				chKey.chKeyIndex = 12;
-				goto TOUCHLONGKEY;
+				chKey.chTime3 = 0;
+				chKey.dwKey1 = K_CUTLONG;
+				chKey.chKeyIndex = 1;
+				goto KEY;
 			}
 			//短按，按键按下后松起才处理，判定为CUT
 			if (chKey.chKeyIndex == 0)
 			{
-				if (chKey.chTime3 > 2)
+				if (chKey.chTime3 > KEYScanTime)
 				{
 					chKey.chKeyIndex = 4;
+				}
+			}
+			return;
+		}
+		if (chKey.dwKey1 == K_WIN)
+		{
+			if (chKey.chTime3 > chTouchKeyScanTime && chKey.bKeyPress == 0) //在此后面与上chKey.bKeyPress == 0表示长按键只有在此之前没有按键按下时才会被判定
+			{
+				chKey.chTime3 = 0;
+				chKey.dwKey1 = K_WINLONG;
+				chKey.chKeyIndex = 1;
+				goto KEY;
+			}
+			if (chKey.chKeyIndex == 0)
+			{
+				if (chKey.chTime3 > KEYScanTime)
+				{
+					chKey.chKeyIndex = 11;
 				}
 			}
 			return;
@@ -254,7 +288,7 @@ void ScanKey(void)
 			//短按，按键按下后松起才处理，判定为K_LEFT
 			if (chKey.chKeyIndex == 0)
 			{
-				if (chKey.chTime3 > 2)
+				if (chKey.chTime3 > KEYScanTime)
 				{
 					chKey.chKeyIndex = 5;
 				}
@@ -276,7 +310,7 @@ void ScanKey(void)
 			//短按，按键按下后松起才处理，判定为K_RIGHT
 			if (chKey.chKeyIndex == 0)
 			{
-				if (chKey.chTime3 > 2)
+				if (chKey.chTime3 > KEYScanTime)
 				{
 					chKey.chKeyIndex = 8;
 				}
@@ -297,7 +331,7 @@ void ScanKey(void)
 			//短按，按键按下后松起才处理，判定为K_UP
 			if (chKey.chKeyIndex == 0)
 			{
-				if (chKey.chTime3 > 2)
+				if (chKey.chTime3 > KEYScanTime)
 				{
 					chKey.chKeyIndex = 9;
 				}
@@ -316,7 +350,7 @@ void ScanKey(void)
 			}
 			if (chKey.chKeyIndex == 0)
 			{
-				if (chKey.chTime3 > 2)
+				if (chKey.chTime3 > KEYScanTime)
 				{
 					chKey.chKeyIndex = 10;
 				}
@@ -337,7 +371,7 @@ void ScanKey(void)
 		}
 		if (chKey.chKeyIndex == 0)
 		{
-			if (chKey.chTime3 > 2)
+			if (chKey.chTime3 > KEYScanTime)
 			{
 				chKey.chKeyIndex = 6;
 			}
@@ -356,22 +390,10 @@ void ScanKey(void)
 		}
 		if (chKey.chKeyIndex == 0)
 		{
-			if (chKey.chTime3 > 2)
+			if (chKey.chTime3 > KEYScanTime)
 			{
 				chKey.chKeyIndex = 7;
 			}
-		}
-		return;
-	}
-
-	if (chKey.dwKey1 == K_CLOTHSETSINGLE)
-	{
-		if (chKey.chTime3 > chTouchKeyScanTime * 2 && chKey.bKeyPress == 0)
-		{
-			chKey.chTime3 = 0;
-			chKey.dwKey1 = K_CLOTHSET;
-			chKey.chKeyIndex = 1;
-			goto KEY;
 		}
 		return;
 	}
@@ -388,7 +410,7 @@ void ScanKey(void)
 		}
 		if (chKey.chKeyIndex == 0 && chKey.bKeyPress == 0)
 		{
-			if (chKey.chTime3 > 2)
+			if (chKey.chTime3 > KEYScanTime)
 			{
 				chKey.chKeyIndex = 3;
 			}
@@ -409,7 +431,7 @@ void ScanKey(void)
 		}
 		if (chKey.chKeyIndex == 0)
 		{
-			if (chKey.chTime3 > 2)
+			if (chKey.chTime3 > KEYScanTime)
 			{
 				chKey.chKeyIndex = 13;
 			}
@@ -428,7 +450,7 @@ void ScanKey(void)
 		}
 		if (chKey.chKeyIndex == 0 && chKey.bKeyPress == 0)
 		{
-			if (chKey.chTime3 > 2)
+			if (chKey.chTime3 > KEYScanTime)
 			{
 				chKey.chKeyIndex = 14;
 			}
@@ -531,7 +553,7 @@ void ScanKey(void)
 			if (chKey.chKeyIndex == 12)
 			{
 				chKey.chKeyIndex = 0;
-				chKey.dwKey1 = K_RCUT;
+				chKey.dwKey1 = K_CLOTHSETSINGLE;
 				goto KEY;
 			}
 			if ((chKey.chKeyIndex == 13) && (chKey.chTimeConKey == 0))
@@ -610,7 +632,7 @@ void ProcessKey()
 			chSetLength = LENGTH_SEW_A + LENGTH_SEW_B;
 			chSetMode = 2;
 			chIndex = LENGTH_SEW_A;
-			chIndexC = FindIndexC(chSetLength,chIndex);
+			chIndexC = FindIndexC(chSetLength, chIndex);
 			wIndexTemp = ReadIndexTemp(chIndex);
 			chIndexTempBit = 5; //参数位选功能
 			bIndexTempBitChange = 1;
@@ -639,7 +661,7 @@ void ProcessKey()
 			chSetLength = LENGTH_SEW_A + LENGTH_SEW_B;
 			chSetMode = 2;
 			chIndex = LENGTH_SEW_A;
-			chIndexC = FindIndexC(chSetLength,chIndex);
+			chIndexC = FindIndexC(chSetLength, chIndex);
 			wIndexTemp = ReadData(chIndex);
 			chIndexTempBit = 5; //参数位选功能
 			bIndexTempBitChange = 1;
@@ -663,13 +685,13 @@ void ProcessKey()
 			{
 			case K_PS:
 			{
-				if(chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+				if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 				{
 					chSetMode = 6;
 					chIndexB = 0; //高级密码
 					chIndexTempBit = 4;
 					bIndexTempBitChange = 1;
-				}	
+				}
 				else
 				{
 					chIndexTempBit = 5; //参数位选功能
@@ -693,7 +715,7 @@ void ProcessKey()
 					chIndexTempBit = 5; //参数位选功能
 					bIndexTempBitChange = 1;
 					chSetMode = 2;
-					chIndexC = FindIndexC(chSetLength,chIndex);
+					chIndexC = FindIndexC(chSetLength, chIndex);
 					wIndexTemp = ReadIndexTemp(chIndex);
 					PLAYBACK(2);
 				}
@@ -708,14 +730,14 @@ void ProcessKey()
 					chIndexTempBit = 5; //参数位选功能
 					bIndexTempBitChange = 1;
 					chIndex = LENGTH_SEW_A;
-					chIndexC = FindIndexC(chSetLength,chIndex);
+					chIndexC = FindIndexC(chSetLength, chIndex);
 					wIndexTemp = ReadIndexTemp(chIndex);
 					PLAYBACK(2);
 				}
 				else
 				{
 					chSetMode = 2;
-					chIndexC = FindIndexC(chSetLength,chIndex);
+					chIndexC = FindIndexC(chSetLength, chIndex);
 					wIndexTemp = ReadIndexTemp(chIndex);
 					chIndexTempBit = 5;
 					bIndexTempBitChange = 1;
@@ -849,11 +871,11 @@ void ProcessKey()
 			}
 			case K_CLOTHSETSINGLE:
 			{
-				if(ReadData(100)!= 0 && ReadData(101)!= 0 && ReadData(102)!= 0)
+				if (ReadData(100) != 0 && ReadData(101) != 0 && ReadData(102) != 0)
 				{
 					chIndexC = 0;
 					JumpToPageData(JumpToMode_4_ClothSet, 10, 0); //布料识别 新
-					//PLAYBACK(35);
+																  //PLAYBACK(35);
 				}
 				else
 				{
@@ -863,7 +885,7 @@ void ProcessKey()
 				}
 				break;
 			}
-			
+
 			case K_RESET:
 			case K_RESET1:
 			{
@@ -1675,7 +1697,7 @@ void ProcessKey()
 					KEYCUT:
 						wIndexTemp = IncPara(wIndexTemp, wRangeA, wRangeB, wRangeC);
 					}
-					if(chMachine !=1)
+					if (chMachine != 1)
 					{
 						switch (wIndexTemp)
 						{
@@ -1715,7 +1737,7 @@ void ProcessKey()
 							break;
 						}
 					}
-					
+
 					//bClearLCD = 0;
 					SaveAndSendData(tblFastFunc[chIndexB], wIndexTemp);
 					break;
@@ -1963,6 +1985,29 @@ void ProcessKey()
 				break;
 			}
 		}
+#if (DefLOCKSCREEN == 1)
+		else if (chSetMode == 8) //锁屏模式
+		{
+			switch (chKey.dwKey)
+			{
+			case K_P:
+				/* wIndexTemp = 0;
+					chSetMode = 1;
+					bReadInfo = 0;
+					ReadDisPara();
+					bClearLCD = 1;
+					bDisplayOn = 1; */
+				chLockScreen.bLockType = 0;
+				chLockScreen.wLockTimeCount = 0;
+				GoToHome();
+				PLAYBACK(72);
+				break;
+			default:
+				chDisSaveFlag = DISCANCELLOCK;
+				break;
+			}
+		}
+#endif
 	}
 }
 #endif

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 17:45:20
+ * @LastEditTime: 2020-08-28 10:47:25
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DataProcess.h"
@@ -848,7 +848,6 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 				chVoiceVol = wIndexTempY;
 				WriteDataB(85, chVoiceVol,1);	 //´æ´¢
 				PLAYVOL(chVoiceVol);
-				Delay_200us(10);
 			}
 			break;
 		}
@@ -866,7 +865,6 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 				chVoiceVol = 4;
 				WriteDataB(85, chVoiceVol,1);	 //´æ´¢
 				PLAYVOL(chVoiceVol);
-				Delay_200us(10);
 			}
 			break;
 		
@@ -1255,7 +1253,7 @@ int ChangeIndexTemp(uchar chIndexX, int wIndexTempX)
 			{
 				PLAYVOL(wIndexTempY);
 				chVoiceVol = wIndexTempY;
-				Delay_200us(10);
+				
 			}
 		}
 		case 63:

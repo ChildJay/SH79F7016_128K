@@ -2,7 +2,7 @@
  * @Description: ”Ô“Ù≤•∑≈π¶ƒ‹
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-08-22 14:00:37
+ * @LastEditTime: 2020-08-28 10:47:34
  * @LastEditors: Please set LastEditors
  */
 #include "bsp_Voice.h"
@@ -182,8 +182,8 @@ void PLAYVOL(uint8 chVOL)
     else if (PlayVoiceMCU == 4)
     {
         Chip_4_DataWrite(chip4OperVoiceLV, chVOL);
-
         Chip_4_DataSend();
+        Delay_200us(10);
     }
 }
 /**

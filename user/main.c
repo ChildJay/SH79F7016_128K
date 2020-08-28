@@ -2,7 +2,7 @@
  * @Description: MAIN
  * @Author: XPH
  * @Date: 2019-09-16 08:09:42
- * @LastEditTime: 2020-08-27 17:41:17
+ * @LastEditTime: 2020-08-28 10:47:03
  * @LastEditors: Please set LastEditors
  */
 #include "includes.h"
@@ -13,34 +13,8 @@
 
 void main(void)
 {
-	/*
-	xdata uint16 i = 0x5566;
-	xdata uint16 temp[5];
-	xdata uint8 j;
-	*/
 	Sys_Initial();
-	/*
-	for (j = 0; j < 8; j++)
-	{
-		Sector_Erase(j);//擦除整页256字节
-	}
-	WriteDataB(0,i,0);
-	WriteDataB(1,i,1);
-	SetIndivWriteData(0,2,i);
-	SetIndivWriteData(1,3,i);
-	StartWriteIndivWriteData(2,1);
-	temp[0] = ReadDataB(0,0);
-	temp[1] = ReadDataB(1,1);
-	temp[2] = ReadDataB(2,1);
-	temp[3] = ReadDataB(3,1);
-	LCD_Display(0, 0, 6, LEFT, CHS15x16, "阿西吧");
-	LCD_DisNumber(0, 16, 4, LEFT, EN8x16, i);
-	
-	SendData((uint8 *)&temp,8);
 
-	PLAYVOL(4);
-	PLAYBACK(2);
-	*/
 	InitPara();
 	TestException();
 	TestWorkStatus();
@@ -67,8 +41,14 @@ void main(void)
 		if (Get5Ms())
 		{
 			Clear5Ms();
+
+			PowerOn();
+			PowerOnVoice();
+			DataSafeOperCountDown();
+
 			ScanKey();
 			CountConKey();
+			FirstExceptionDisplay();
 
 			SCITimeOut(); //超时计时
 			if (chDisSaveFlag > 0)
@@ -79,12 +59,7 @@ void main(void)
 			}
 			CountTimeBack();
 
-			PowerOn();
-			PowerOnVoice();
-
-#if (DefBreathLED == 1)
-			BreathingLED();
-#endif
+			
 			BuzzleDelay();
 			GoHomeSendData();
 #if (DefONEKEYTEST == 1)
@@ -92,13 +67,14 @@ void main(void)
 #endif
 #if (DefLOCKSCREEN == 1)
 			TestLockScreen();
-#endif
-			FirstExceptionDisplay();
+#endif	
 #if (DefSpeedLimitENABLE == 1)
-
 			TestValue();
 #endif
-			DataSafeOperCountDown();
+#if (DefBreathLED == 1)
+			BreathingLED();
+#endif
+			
 		}
 		 // 当有键按下时
         if (chKey.bKeyNotify)
@@ -132,7 +108,6 @@ void main(void)
             Display();
         }
 
-        
         if ((bPowerOn == 1) && (chPowerOn < 10))
         {
             bPowerOn = 0;
