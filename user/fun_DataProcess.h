@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 17:21:20
+ * @LastEditTime: 2020-08-29 09:19:52
  * @LastEditors: Please set LastEditors
  */
 #ifndef __FUN_DATAPROCESS_H
@@ -114,4 +114,5 @@ void ReadDisPara(void);
 int ChangeIndexRangeData(uchar chIndexX, uchar chindexRange);
 int ChangeIndexTemp(uchar chIndexX, int wIndexTempX);
 void TestTimeBack(void);
+void PowerOnShakeHands(void);
 #endif

@@ -2,7 +2,7 @@
  * @Description: MAIN
  * @Author: XPH
  * @Date: 2019-09-16 08:09:42
- * @LastEditTime: 2020-08-28 10:47:03
+ * @LastEditTime: 2020-08-29 11:47:58
  * @LastEditors: Please set LastEditors
  */
 #include "includes.h"
@@ -48,6 +48,7 @@ void main(void)
 
 			ScanKey();
 			CountConKey();
+			testClothSetTimeOut();
 			FirstExceptionDisplay();
 
 			SCITimeOut(); //超时计时
@@ -111,13 +112,7 @@ void main(void)
         if ((bPowerOn == 1) && (chPowerOn < 10))
         {
             bPowerOn = 0;
-            ReadSewData(); // 读缝纫数据
-            if (PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
-            { //改，
-                PLAYVOL(chVoiceVol);
-            }
-            StartShakeHand();
-            bDisplayOn = 1;
+            PowerOnShakeHands();
         }
 		TestReadInfo();
         TestTimeBack();

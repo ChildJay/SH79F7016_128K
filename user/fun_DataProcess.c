@@ -2,23 +2,23 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-28 10:47:25
+ * @LastEditTime: 2020-09-05 08:58:02
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DataProcess.h"
 #include "includes.h"
 
 xdata uint wFastFunctionTemp[6] = {0, 0, 0, 0, 0, 0}; //主界面快捷功能调整参数缓存，0预留 1剪线/松线 2吸气  3压脚 4P27 5P28
-xdata uint wSensorValueReceive[3] = {0,0,0};
+xdata uint wSensorValueReceive[3] = {0, 0, 0};
 
 bit bAuto;		//P4
 bit bSensorSW;  //P5
 bit bSensorFSW; //p22
 bit bAdmin = 0; //管理员模式
 //参数缓存
-uchar chMachine = 0;	  //P70项机型
-uchar chMachine1 = 0;	 //P88项用户机型
-xdata uint wLimitV = 0;   //P71项最高限速
+uchar chMachine = 0;	//P70项机型
+uchar chMachine1 = 0;   //P88项用户机型
+xdata uint wLimitV = 0; //P71项最高限速
 
 xdata uint chSensorF = 0;	 //前感应阈值
 xdata uint chSensorM = 0;	 //中感应阈值
@@ -35,16 +35,16 @@ xdata sClothPara chClothSet = {0, 0, 0, 0, 0, 0, 0, 0};
 
 uint xdata chSensorTempOldClothSet[6] = {0, 0, 0, 0, 0, 0}; //旧的布料识别模式参数缓存
 //流程操作
-uchar chSetMode = 0;				  // 一般模式还是参数设置模式
-bit bIndexTempBitChange;			  //位选功能使能标志位
-uchar chIndex = 0;					  // 参数设置的第几项
-uchar chIndexB;						  //参数项序号 等级B，快捷参数调节模式，
-uchar chIndexC = 0;						  //参数项序号 等级C，布料识别模式
-xdata uchar chInfoIndex = 0;		  //P74项参数序号
+uchar chSetMode = 0;		 // 一般模式还是参数设置模式
+bit bIndexTempBitChange;	 //位选功能使能标志位
+uchar chIndex = 0;			 // 参数设置的第几项
+uchar chIndexB;				 //参数项序号 等级B，快捷参数调节模式，
+uchar chIndexC = 0;			 //参数项序号 等级C，布料识别模式
+xdata uchar chInfoIndex = 0; //P74项参数序号
 
 uchar chSetLength = IndexLengthA; // 参数上限
 
-int wIndexTemp;					  // 参数缓存
+int wIndexTemp; // 参数缓存
 
 bit bPowerOn = 0;		   //电源开关标志位
 xdata uchar chSensor = 0;  //读取电眼数据的标志位，11,12,13分别为前中后电眼的参数标志位
@@ -58,7 +58,6 @@ xdata uint wCanSave = 1000;   //防止异常掉电导致的数据丢失的数据保护时间计数
 
 xdata long nTestTime = 0; //测试模式计时
 xdata uchar chPoweronVoice = 0;
-
 
 /**
   * @brief   从其他界面跳转回主界面（开机界面除外）
@@ -130,11 +129,11 @@ int DecPara(int wData, int wMax, int wMin, int chStep)
 		//}
 		//else
 		//{
-			wData -= chStep;
-			if (wData < wMin)
-			{
-				wData = wMin;
-			}
+		wData -= chStep;
+		if (wData < wMin)
+		{
+			wData = wMin;
+		}
 		//}
 	}
 	return wData;
@@ -160,14 +159,15 @@ void SaveAndSendData(uchar chIndex, int wData)
   */
 void SystemReset(uchar chResetLevel)
 {
-	//TR0 = 0;
+
+	TR0 = 0;
 	EA = 0;
 	auto_clearEEprom(chResetLevel);
-	bPowerOn = 1;
+	//bPowerOn = 1;
 	chDisSaveFlag = DISRESET;
-
 	EA = 1;
-	//TR0 = 1;
+	TR0 = 1;
+	PowerOnShakeHands();
 	PLAYBACK(15);
 }
 /**********************/
@@ -178,29 +178,45 @@ void ReadSewData(void)
 {
 	uchar i;
 	uchar ErrorDataCount = 0;
-	ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_USER_START_BLOCK,(uint8 *)&EEPROM_buffer,tblDataNum);
-	for (i = 0; i < tblDataNum; i++)
+	//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_USER_START_BLOCK,(uint8 *)&EEPROM_buffer,tblDataNum);
+	if (ReadDataB(0, 1) < 100 || ReadDataB(0, 1) > 9999)//判断新旧屏幕
 	{
-		if (EEPROM_buffer[i] > 9999)
-		{
-			ErrorDataCount |= 0x01;
-		}
+		auto_clearEEprom(2);
 	}
-	if(ErrorDataCount & 0x01 != 0)
+	else
 	{
-		ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_SET_START_BLOCK,(uint8 *)&EEPROM_buffer,tblDataNum);
+		for (i = 0; i < tblDataNum; i++)
+		{
+			EEPROM_buffer[i] = ReadDataB(i, 0);
+		}
 		for (i = 0; i < tblDataNum; i++)
 		{
 			if (EEPROM_buffer[i] > 9999)
 			{
-				ErrorDataCount |= 0x02;
+				ErrorDataCount = 1;
+				break;
 			}
 		}
-		if(ErrorDataCount & 0x02 == 0)
-			auto_clearEEprom(2);
-		else
-			auto_clearEEprom(2);
+		if (ErrorDataCount)
+		{
+
+			//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_SET_START_BLOCK, (uint8 *)&EEPROM_buffer, tblDataNum);
+			for (i = 0; i < tblDataNum; i++)
+			{
+				EEPROM_buffer[i] = ReadDataB(i, 1);
+			}
+			for (i = 0; i < tblDataNum; i++)
+			{
+				ErrorDataCount = 2;
+				break;
+			}
+			if (ErrorDataCount == 1)
+				auto_clearEEprom(3);
+			else
+				auto_clearEEprom(2);
+		}
 	}
+
 	ReadDisPara();
 
 	_nop_();
@@ -283,7 +299,11 @@ void ReadSetIndexTemp(uchar chResetLevel)
 	// ResetKey
 	if (chResetLevel == 0)
 	{
-		ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_SET_START_BLOCK,(uint8 *)&EEPROM_buffer,tblDataNum);
+		//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_SET_START_BLOCK, (uint8 *)&EEPROM_buffer, tblDataNum);
+		for (i = 0; i < tblDataNum; i++)
+		{
+			EEPROM_buffer[i] = ReadDataB(i, 1);
+		}
 	}
 	// P70项机型更改
 	else if (chResetLevel == 1)
@@ -327,11 +347,11 @@ void auto_clearEEprom(uchar chResetLevel)
 	{
 		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
 		{
-			Sector_Erase(EEPROM_USER_START_BLOCK + i);//擦除整页256字节
+			Sector_Erase(EEPROM_USER_START_BLOCK + i); //擦除整页256字节
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK,EEPROM_START_ADDRESS + 2 * i,EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
 		}
 		// 全部恢复
 	}
@@ -340,13 +360,13 @@ void auto_clearEEprom(uchar chResetLevel)
 	{
 		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
 		{
-			Sector_Erase(EEPROM_SET_START_BLOCK + i);//擦除整页256字节
-			Sector_Erase(EEPROM_USER_START_BLOCK + i);//擦除整页256字节
+			Sector_Erase(EEPROM_SET_START_BLOCK + i);  //擦除整页256字节
+			Sector_Erase(EEPROM_USER_START_BLOCK + i); //擦除整页256字节
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK,EEPROM_START_ADDRESS + 2 * i,EEPROM_buffer[i]);
-			eeprom_write_word(EEPROM_SET_START_BLOCK,EEPROM_START_ADDRESS + 2 * i,EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
 		}
 		// 全部恢复
 	}
@@ -364,13 +384,30 @@ void auto_clearEEprom(uchar chResetLevel)
 		}
 		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
 		{
-			Sector_Erase(EEPROM_SET_START_BLOCK + i);//擦除整页256字节
-			Sector_Erase(EEPROM_USER_START_BLOCK + i);//擦除整页256字节
+			Sector_Erase(EEPROM_SET_START_BLOCK + i);  //擦除整页256字节
+			Sector_Erase(EEPROM_USER_START_BLOCK + i); //擦除整页256字节
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK,EEPROM_START_ADDRESS + 2 * i,EEPROM_buffer[i]);
-			eeprom_write_word(EEPROM_SET_START_BLOCK,EEPROM_START_ADDRESS + 2 * i,EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+		}
+	}
+	else if (chResetLevel == 3)//数据保护恢复设置
+	{
+		for (i = 0; i < tblDataNum; i++)
+		{
+			EEPROM_buffer[i] = ReadDataB(i, 1);
+		}
+		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
+		{
+			Sector_Erase(EEPROM_SET_START_BLOCK + i);  //擦除整页256字节
+			Sector_Erase(EEPROM_USER_START_BLOCK + i); //擦除整页256字节
+		}
+		for (i = 0; i < tblDataNum; i++)
+		{
+			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
 		}
 	}
 }
@@ -477,11 +514,15 @@ int ReadIndexTemp(uchar chIndexX)
 			i = 13;
 			wSensorValueReceive[2] = 0;
 			goto A_PKEYINFO;
+		case 119://步进点击角度
+			i = 15;
+			wStepMotorAngle = 0;
+			goto A_PKEYINFO;
 		}
 		break;
 	}
-	
-	bIndexTempBitChange = 1;//参数位选功能使能
+
+	bIndexTempBitChange = 1; //参数位选功能使能
 	wDataA = ChangeIndexRangeData(chIndexX, 0);
 	if (wDataA / 1000 > 0)
 	{
@@ -648,8 +689,8 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 		if (wPositAngle < MotorAngleOneCircle)
 		{
 			StartSendPara(chIndexX - 22, wPositAngle); //发送
-			WriteDataB(chIndexX - 22, wPositAngle,1);	 //存储
-			WriteDataB(chIndexX, wPositAngle,1); //存储
+			WriteDataB(chIndexX - 22, wPositAngle, 1); //存储
+			WriteDataB(chIndexX, wPositAngle, 1);	  //存储
 			bReadInfo = 1;
 			chDisSaveFlag = DISSAVE;
 		}
@@ -659,7 +700,7 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 		if ((chMachine + 1) != wIndexTempY)
 		{
 			chMachine = wIndexTempY - 1;
-			WriteDataB(chIndexX, wIndexTempY,1);
+			WriteDataB(chIndexX, wIndexTempY, 1);
 			SystemReset(1);
 			chSetMode = 0;
 		}
@@ -716,83 +757,82 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 		break;
 #endif
 	case 91:
-			chPoweronVoice = wIndexTempY;
-			WriteDataB(chIndexX,chPoweronVoice,1);
-			if(chPoweronVoice != 0)
-			{
-				switch (chPoweronVoice)
-				{
-					case 1:
-						PLAYBACK(88);
-						break;
-					case 2:
-						PLAYBACK(63);
-						break;
-					case 3:
-						PLAYBACK(0);
-						break;
-					case 4:
-						PLAYBACK(1);
-						break;
-					case 5:
-						PLAYBACK(61);
-						break;
-					case 6:
-						PLAYBACK(62);
-						break;
-					case 7:
-						PLAYBACK(64);
-						break;
-					case 8:
-						PLAYBACK(65);
-						break;
-					case 9:
-						PLAYBACK(66);
-						break;
-					case 10:
-						PLAYBACK(67);
-						break;
-					case 11:
-						PLAYBACK(68);
-						break;
-					default:break;
-				}
-				
-			}
-			break;
-	case 99:
+		chPoweronVoice = wIndexTempY;
+		WriteDataB(chIndexX, chPoweronVoice, 1);
+		if (chPoweronVoice != 0)
 		{
-			if(wIndexTempY == 0)
+			switch (chPoweronVoice)
 			{
-				WriteData(96, 0);
-				WriteData(99, 0);
-				SetSendIndiv(0, 96, 0);
-				SetSendIndiv(1, 99, 0);
-				StartSendIndiv(2);
-				PLAYBACK(77);
+			case 1:
+				PLAYBACK(88);
+				break;
+			case 2:
+				PLAYBACK(63);
+				break;
+			case 3:
+				PLAYBACK(0);
+				break;
+			case 4:
+				PLAYBACK(1);
+				break;
+			case 5:
+				PLAYBACK(61);
+				break;
+			case 6:
+				PLAYBACK(62);
+				break;
+			case 7:
+				PLAYBACK(64);
+				break;
+			case 8:
+				PLAYBACK(65);
+				break;
+			case 9:
+				PLAYBACK(66);
+				break;
+			case 10:
+				PLAYBACK(67);
+				break;
+			case 11:
+				PLAYBACK(68);
+				break;
+			default:
+				break;
 			}
-			else if(wIndexTempY == 1)
-			{
-				WriteData(96, 3);
-				WriteData(99, 1);
-				SetSendIndiv(0, 96, 3);
-				SetSendIndiv(1, 99, 1);
-				StartSendIndiv(2);
-				PLAYBACK(76);
-			}
-			else if(wIndexTempY == 2)
-			{
-				WriteData(96, 7);
-				WriteData(99, 2);
-				SetSendIndiv(0, 96, 7);
-				SetSendIndiv(1, 99, 2);
-				StartSendIndiv(2);
-				PLAYBACK(78);
-			}
-			chDisSaveFlag = DISSAVE;
-			break;
-
 		}
+		break;
+	case 99:
+	{
+		if (wIndexTempY == 0)
+		{
+			WriteData(96, 0);
+			WriteData(99, 0);
+			SetSendIndiv(0, 96, 0);
+			SetSendIndiv(1, 99, 0);
+			StartSendIndiv(2);
+			PLAYBACK(77);
+		}
+		else if (wIndexTempY == 1)
+		{
+			WriteData(96, 3);
+			WriteData(99, 1);
+			SetSendIndiv(0, 96, 3);
+			SetSendIndiv(1, 99, 1);
+			StartSendIndiv(2);
+			PLAYBACK(76);
+		}
+		else if (wIndexTempY == 2)
+		{
+			WriteData(96, 7);
+			WriteData(99, 2);
+			SetSendIndiv(0, 96, 7);
+			SetSendIndiv(1, 99, 2);
+			StartSendIndiv(2);
+			PLAYBACK(78);
+		}
+		chDisSaveFlag = DISSAVE;
+		break;
+	}
 	default:
 	{
 		switch (chIndexX)
@@ -846,7 +886,7 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 			if (PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
 			{
 				chVoiceVol = wIndexTempY;
-				WriteDataB(85, chVoiceVol,1);	 //存储
+				WriteDataB(85, chVoiceVol, 1); //存储
 				PLAYVOL(chVoiceVol);
 			}
 			break;
@@ -863,11 +903,11 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 			if (PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
 			{
 				chVoiceVol = 4;
-				WriteDataB(85, chVoiceVol,1);	 //存储
+				WriteDataB(85, chVoiceVol, 1); //存储
 				PLAYVOL(chVoiceVol);
 			}
 			break;
-		
+
 #if (DefLOCKSCREEN == 1)
 		case 92:
 			if (chKey.bKeyType == 1)
@@ -889,7 +929,8 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 		case 66:
 		case 71:
 		case 72:
-		case 73:	
+		case 73:
+		case 119:
 			bReadInfo = 1;
 			break;
 		default:
@@ -934,126 +975,144 @@ int ChangeIndexRangeData(uchar chIndexX, uchar chindexRange)
 		break;
 	}
 #endif
-		case 8: 
+	case 8:
+	{
+		if (chMachine == 2)
 		{
-			if(chMachine == 2)
-			{
-				tblRangeTemp[0]  = 3;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}	
-			break;
+			tblRangeTemp[0] = 3;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
 		}
-		case 20: {
-			if(chMachine == 0)
-				tblRangeTemp[2] = 0;
-			break;
+		break;
+	}
+	case 20:
+	{
+		if (chMachine == 0)
+			tblRangeTemp[2] = 0;
+		break;
+	}
+
+	case 28:
+	{
+		if (chMachine == 0)
+		{
+			tblRangeTemp[2] = 0;
+		}
+		else if (chMachine == 1)
+		{
+			tblRangeTemp[0] = 50;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		else
+		{
+			tblRangeTemp[0] = 50;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		break;
+	}
+	case 32:
+	{
+		if (chMachine == 2)
+		{
+			tblRangeTemp[0] = 50;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		break;
+	}
+	case 33:
+	{
+		if (chMachine == 0)
+		{
+			tblRangeTemp[0] = 1;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		else if (chMachine == 1 || chMachine == 2)
+		{
+			tblRangeTemp[0] = 50;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		break;
+	}
+	case 29:
+	{
+		if (chMachine == 0)
+		{
+			tblRangeTemp[0] = 2000;
+			tblRangeTemp[2] = 10;
+		}
+		else if (chMachine == 1 || chMachine == 2)
+		{
+			tblRangeTemp[0] = 50;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		break;
+	}
+	case 30:
+	{
+		if (chMachine == 2)
+		{
+			tblRangeTemp[1] = 10;
+		}
+		else if (chMachine == 1)
+		{
+			tblRangeTemp[0] = 99;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
 		}
 
-		case 28:{
-			if (chMachine == 0) {
-				tblRangeTemp[2] = 0;
-			} else if (chMachine == 1){
-				tblRangeTemp[0]  = 50;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			else
-			{
-				tblRangeTemp[0]  = 50;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			break;
-		}
-		case 32:
+		break;
+	}
+	// 压脚全始出力时间
+	case 40:
+	// 压脚下放时间
+	case 42:
+	// 剪线时间
+	case 44:
+	{
+		if (chMachine == 1)
 		{
-			if(chMachine == 2)
-			{
-				tblRangeTemp[0]  = 50;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			break;
+			tblRangeTemp[0] = 5000;
+			tblRangeTemp[1] = 100;
+			tblRangeTemp[2] = 100;
 		}
-		case 33:{
-			if (chMachine == 0) {
-				tblRangeTemp[0]  = 1;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			} else if (chMachine == 1 || chMachine == 2){
-				tblRangeTemp[0]  = 50;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			break;
-		}
-		case 29: {
-			if (chMachine == 0) {
-				tblRangeTemp[0] = 2000;
-				tblRangeTemp[2] = 10;
-			}
-			else if(chMachine == 1||chMachine == 2)
-			{
-				tblRangeTemp[0]  = 50;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			break;
-		}
-		case 30: {
-			if (chMachine == 2) {
-				tblRangeTemp[1] = 10;
-			}
-			else if(chMachine == 1)
-			{
-				tblRangeTemp[0]  = 99;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			
-			break;
-		}
-		// 压脚全始出力时间
-		case 40:  
-		// 压脚下放时间
-		case 42:  
-		// 剪线时间
-		case 44: {
-			if (chMachine == 1) {
-				tblRangeTemp[0] = 5000;
-				tblRangeTemp[1] = 100;
-				tblRangeTemp[2] = 100;
-			}
-			break;
-		}
-		case 67: {
-			if (chMachine != 1) {
-				tblRangeTemp[2] = 0;
-			}
-			break;
-		}
-		case 85: {
-			if (PlayVoiceMCU == 1) 
-			{
-				tblRangeTemp[0] = 4;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			else if(PlayVoiceMCU == 4)
-			{
-				tblRangeTemp[0] = 5;
-				tblRangeTemp[1] = 0;
-				tblRangeTemp[2] = 1;
-			}
-			break;
-		}
-		case 87:
-		case 88:
+		break;
+	}
+	case 67:
+	{
+		if (chMachine != 1)
 		{
-				tblRangeTemp[2] = 0;
-			break;
+			tblRangeTemp[2] = 0;
 		}
+		break;
+	}
+	case 85:
+	{
+		if (PlayVoiceMCU == 1)
+		{
+			tblRangeTemp[0] = 4;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		else if (PlayVoiceMCU == 4)
+		{
+			tblRangeTemp[0] = 5;
+			tblRangeTemp[1] = 0;
+			tblRangeTemp[2] = 1;
+		}
+		break;
+	}
+	case 87:
+	case 88:
+	{
+		tblRangeTemp[2] = 0;
+		break;
+	}
 	default:
 		break;
 	}
@@ -1131,7 +1190,7 @@ int ChangeIndexTemp(uchar chIndexX, int wIndexTempX)
 		}
 		case 73:
 		{
-			if(bAdmin == 0)
+			if (bAdmin == 0)
 			{
 				if (chKey.dwKey == K_UP)
 					chInfoIndex = IncPara(chInfoIndex, wDataA, wDataB, 1);
@@ -1249,11 +1308,11 @@ int ChangeIndexTemp(uchar chIndexX, int wIndexTempX)
 			break;
 		case 85:
 		{
-			if(PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
+			chVoicePlayedBef = 0;
+			if (PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
 			{
 				PLAYVOL(wIndexTempY);
 				chVoiceVol = wIndexTempY;
-				
 			}
 		}
 		case 63:
@@ -1296,16 +1355,16 @@ void TestTimeBack(void)
 		{
 			GoToHome();
 		}
-		
 	}
-	#if (DefBackToHome == 1)
-	else if ((chSetMode != 1) && (chSetMode != 4) && (chIndex != 73)) 
+#if (DefBackToHome == 1)
+	else if ((chSetMode != 1) && (chSetMode != 4) && (chIndex != 73))
 	{
-		 if (wTimeBack == 2400) {
-		     GoToHome();
-		 }
+		if (wTimeBack == 2400)
+		{
+			GoToHome();
+		}
 	}
-	#endif
+#endif
 	else if (((chSetMode == 4) && (chIndexB == 4)))
 	{
 		if (wTimeBack == 200)
@@ -1324,4 +1383,15 @@ void TestTimeBack(void)
 			bClearLCD = 1;
 		}
 	}
+}
+
+void PowerOnShakeHands(void)
+{
+	ReadSewData(); // 读缝纫数据
+	if (PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
+	{ //改，
+		PLAYVOL(chVoiceVol);
+	}
+	StartShakeHand();
+	bDisplayOn = 1;
 }

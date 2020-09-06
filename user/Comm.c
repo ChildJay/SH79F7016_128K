@@ -2,7 +2,7 @@
  * @Description: 通讯信号处理
  * @Author: xph
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 17:45:49
+ * @LastEditTime: 2020-09-05 08:54:47
  * @LastEditors: Please set LastEditors
  */
 #include "Comm.h"
@@ -98,6 +98,8 @@ xdata uint wVelocity = 0; // 速度
 xdata uint wVer = 0;		// 主板版本
 xdata uint wDiviceVer = 0;  //驱动版本号
 xdata uint wPositAngle = 0; //定位角度
+xdata uint wClothSetTimeOut = 0;//布料识别超时计数
+xdata int wStepMotorAngle = 0;//步进电机实时角度
 
 xdata uchar chTimeInfo = 0;			 //读取电控信息的间隔时间计时
 xdata uchar chGoHomeSendDataNum = 0; //回到主界面发送信息参数
@@ -784,6 +786,9 @@ A_PPLoop:
 				wIndexTemp = wTemp;
 				bClearLCD = 10;
 				break;
+			case 15://步进电机编码器角度
+				wStepMotorAngle = wTemp;
+				break;
 			case 2: //速度
 			case 5: //脚踏板
 			case 9: //零点角度
@@ -952,7 +957,7 @@ A_PPLoop:
 			chClothSet.chProgress = chReadData[(chReadHead + 15) % LENGTHREAD];
 			//bClearLCD = 5;
 			bDisplayOn = 1;
-
+			wClothSetTimeOut = 0;
 			if (chSetMode == 4 && chIndexB == 7 && chClothSet.bComplete && chClothSet.chProgress == 100)
 			{
 				
@@ -1153,3 +1158,37 @@ void TestReadInfo(void)
 		}
 	}
 }
+/**
+  * @brief   布料超时计时
+  * @param  
+  * @note	 注释
+  * @retval  返回值
+  */
+
+void testClothSetTimeOut(void)
+{
+	if(chSetMode == 4 && chIndexB == 7 && chClothSet.bComplete == 0 && chClothSet.chProgress < 100)
+	{
+		wClothSetTimeOut ++;
+		if(wClothSetTimeOut > 600)
+		{
+			//chDisSaveFlag = DISCLOTHSETFAIL;
+			chClothSet.bComplete = 0;
+			chClothSet.chProgress = 0;
+			chClothSet.wSensorBIntensity = ReadData(65);
+			chClothSet.wSensorMIntensity = ReadData(64);
+			chClothSet.wSensorFIntensity = ReadData(63);
+			chClothSet.wSensorBValue = 0;
+			chClothSet.wSensorFValue = 0;
+			chClothSet.wSensorMValue = 0;
+			chIndexB = 11;
+			bClearLCD = 1;
+			bDisplayOn = 1;
+			//GoToHome();	
+			PLAYBACK(40);
+			//chGoHomeSendDataNum = 6;
+		}
+	}
+	
+}
+

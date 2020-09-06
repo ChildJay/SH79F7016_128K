@@ -2,7 +2,7 @@
  * @Description: 存储缝纫机默认参数等
  * @Author: XPH
  * @Date: 2019-09-16 09:07:43
- * @LastEditTime: 2020-08-22 15:56:37
+ * @LastEditTime: 2020-08-29 10:44:59
  * @LastEditors: Please set LastEditors
  */
 #ifndef __SEWMACHINEDATA_H
@@ -40,7 +40,7 @@ extern code uint8 tblFastFunc[10];
 
 typedef struct
 {
-	const char * Chinese;
+    const char * Chinese;
 	const char * English;
 	const char * Turkey;
 

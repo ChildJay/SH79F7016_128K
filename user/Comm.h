@@ -2,7 +2,7 @@
  * @Description: 通讯信号处理
  * @Author: xph
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-27 17:01:23
+ * @LastEditTime: 2020-09-05 08:54:18
  * @LastEditors: Please set LastEditors
  */
 #ifndef __COMM_H
@@ -127,6 +127,7 @@ extern xdata uint wVelocity; // 速度
 extern xdata uint wVer; // 版本
 extern xdata uint wDiviceVer;  //驱动版本号
 extern xdata uint wPositAngle;
+extern xdata int wStepMotorAngle;
 
 extern xdata uchar chTimeInfo;          //读取电控信息的间隔时间计时
 extern xdata uchar chGoHomeSendDataNum; //回到主界面发送信息参数
@@ -175,6 +176,6 @@ void ProcessTimeOut(void);
 void GoHomeSendData(void);
 void InitPara(void);
 void TestReadInfo(void);
-
+void testClothSetTimeOut(void);
 
 #endif

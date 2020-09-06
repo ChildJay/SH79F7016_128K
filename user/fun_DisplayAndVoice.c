@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-28 10:50:12
+ * @LastEditTime: 2020-09-05 08:56:28
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DisplayAndVoice.h"
@@ -15,14 +15,14 @@ xdata sLockPara chLockScreen = {0, 0, 0};
 #endif
 xdata uint8 chFirstNoConnectionDis = 0; //第一次通讯异常报警
 bit bFirstExceptionDis = 0;				//第一次报错计数，为了使在其他界面下，也能退回主界面优先显示报警信息
-xdata uint8 chDisSaveFlag = 0;//意识与显示
-bit bDisplayOn = 0; //显示标志位
-bit bClearFlag = 0;//清屏标志位
-uint8 bClearLCD = 1;//清除的屏幕部位
+xdata uint8 chDisSaveFlag = 0;			//意识与显示
+bit bDisplayOn = 0;						//显示标志位
+bit bClearFlag = 0;						//清屏标志位
+uint8 bClearLCD = 1;					//清除的屏幕部位
 
-BOOL bBitChangeIndexOrTemp = 0; //用于判断位选功能在参数还是选项之间切换 1在参数序号 0在参数选项
-xdata uint8 chIndexTempBit = 0;			  //位选位号参数
-xdata uint8 chIndexTempBitMAX = 0;	//参数位选功能，相应选项参数的最高位
+BOOL bBitChangeIndexOrTemp = 0;	//用于判断位选功能在参数还是选项之间切换 1在参数序号 0在参数选项
+xdata uint8 chIndexTempBit = 0;	//位选位号参数
+xdata uint8 chIndexTempBitMAX = 0; //参数位选功能，相应选项参数的最高位
 
 #if (DefBreathLED == 1)
 //呼吸灯相关
@@ -31,16 +31,14 @@ bit bBrightAdd = 1;			 //呼吸灯亮度
 bit bBright;				 //呼吸灯点亮
 #endif
 
-
-void LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, uint8 *chCode, uint8 rev, BOOL bDisUnit) 
+void LCD_DisplayB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, uint8 *chCode, uint8 rev, BOOL bDisUnit)
 {
 	LCD_DisplayBasic(x, y, WordsCount, chSide, Type, chCode, rev, bDisUnit, chIndexTempBit, bBitChangeIndexOrTemp);
 }
-void LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev) 
+void LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type, int32 Number, uint8 rev)
 {
 	LCD_DisNumberBasic(x, y, WordsCount, chSide, Type, Number, rev, chIndexTempBit, bBitChangeIndexOrTemp);
 }
-
 
 /**
   * @brief   用于display()函数中重复显示的内容，单位
@@ -51,66 +49,70 @@ void LCD_DisNumberB(uint8 x, uint8 y, uint8 WordsCount, uint8 chSide, uint8 Type
   */
 uint8 Display_Unit(uint8 dis_X, uint8 dis_Y, uint8 dis_Index, bit Dis_BitPiont)
 {
-	if(tblParaUnitOROptions[chMachine * 2][dis_Index] == 0)
+	if (tblParaUnitOROptions[chMachine * 2][dis_Index] == 0)
 	{
-		if (chLanguage == 1)
+		if (tblParaUnitOROptions[chMachine * 2 + 1][dis_Index] != 0)
 		{
-			LCD_DisplayB(dis_X, dis_Y, \
-				strlen(UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Chinese), \
-				RIGHT, CHS15x16, \
-				UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Chinese, 0, 1);
+			if (chLanguage == 1)
+			{
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Chinese),
+							 RIGHT, CHS15x16,
+							 UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Chinese, 0, 1);
+			}
+			else if (chLanguage == 0)
+			{
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].English),
+							 RIGHT, EN8x16,
+							 UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].English, 0, 1);
+			}
+			else if (chLanguage == 2)
+			{
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Turkey),
+							 RIGHT, TR5x7,
+							 UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Turkey, 0, 1);
+			}
 		}
-		else if (chLanguage == 0)
-		{
-			LCD_DisplayB(dis_X, dis_Y, \
-				strlen(UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].English), \
-				RIGHT, EN8x16, \
-				UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].English, 0, 1);
-		}
-		else if (chLanguage == 2)
-		{
-			LCD_DisplayB(dis_X, dis_Y, \
-				strlen(UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Turkey), \
-				RIGHT, TR5x7, \
-				UnitDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].Turkey, 0, 1);
-		}
+
 		return 1;
 	}
-	else if(tblParaUnitOROptions[chMachine * 2][dis_Index] == 1)
+	else if (tblParaUnitOROptions[chMachine * 2][dis_Index] == 1)
 	{
 		if (chLanguage == 1)
 		{
 			switch (wIndexTemp)
 			{
 			case 4:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Chinese), \
-				RIGHT, CHS15x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Chinese, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Chinese),
+							 RIGHT, CHS15x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Chinese, Dis_BitPiont, 0);
 				break;
 			case 3:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Chinese), \
-				RIGHT, CHS15x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Chinese, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Chinese),
+							 RIGHT, CHS15x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Chinese, Dis_BitPiont, 0);
 				break;
 			case 2:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Chinese), \
-				RIGHT, CHS15x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Chinese, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Chinese),
+							 RIGHT, CHS15x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Chinese, Dis_BitPiont, 0);
 				break;
 			case 1:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Chinese), \
-				RIGHT, CHS15x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Chinese, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Chinese),
+							 RIGHT, CHS15x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Chinese, Dis_BitPiont, 0);
 				break;
 			case 0:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Chinese), \
-				RIGHT, CHS15x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Chinese, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Chinese),
+							 RIGHT, CHS15x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Chinese, Dis_BitPiont, 0);
 				break;
 			default:
 				break;
@@ -121,34 +123,34 @@ uint8 Display_Unit(uint8 dis_X, uint8 dis_Y, uint8 dis_Index, bit Dis_BitPiont)
 			switch (wIndexTemp)
 			{
 			case 4:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.English), \
-				RIGHT, Uni8x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.English, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.English),
+							 RIGHT, Uni8x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.English, Dis_BitPiont, 0);
 				break;
 			case 3:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.English), \
-				RIGHT, Uni8x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.English, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.English),
+							 RIGHT, Uni8x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.English, Dis_BitPiont, 0);
 				break;
 			case 2:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.English), \
-				RIGHT, Uni8x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.English, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.English),
+							 RIGHT, Uni8x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.English, Dis_BitPiont, 0);
 				break;
 			case 1:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.English), \
-				RIGHT, Uni8x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.English, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.English),
+							 RIGHT, Uni8x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.English, Dis_BitPiont, 0);
 				break;
 			case 0:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.English), \
-				RIGHT, Uni8x16, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.English, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.English),
+							 RIGHT, Uni8x16,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.English, Dis_BitPiont, 0);
 				break;
 			default:
 				break;
@@ -159,34 +161,34 @@ uint8 Display_Unit(uint8 dis_X, uint8 dis_Y, uint8 dis_Index, bit Dis_BitPiont)
 			switch (wIndexTemp)
 			{
 			case 4:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Turkey), \
-				RIGHT, TR5x7, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Turkey, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Turkey),
+							 RIGHT, TR5x7,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis4.Turkey, Dis_BitPiont, 0);
 				break;
 			case 3:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Turkey), \
-				RIGHT, TR5x7, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Turkey, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Turkey),
+							 RIGHT, TR5x7,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis3.Turkey, Dis_BitPiont, 0);
 				break;
 			case 2:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Turkey), \
-				RIGHT, TR5x7, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Turkey, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Turkey),
+							 RIGHT, TR5x7,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis2.Turkey, Dis_BitPiont, 0);
 				break;
 			case 1:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Turkey), \
-				RIGHT, TR5x7, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Turkey, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Turkey),
+							 RIGHT, TR5x7,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis1.Turkey, Dis_BitPiont, 0);
 				break;
 			case 0:
-				LCD_DisplayB(dis_X, dis_Y, \
-				strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Turkey), \
-				RIGHT, TR5x7, \
-				OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Turkey, Dis_BitPiont, 0);
+				LCD_DisplayB(dis_X, dis_Y,
+							 strlen(OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Turkey),
+							 RIGHT, TR5x7,
+							 OptionsDisplayMsg[tblParaUnitOROptions[chMachine * 2 + 1][dis_Index]].OptionsDis0.Turkey, Dis_BitPiont, 0);
 				break;
 			default:
 				break;
@@ -195,7 +197,6 @@ uint8 Display_Unit(uint8 dis_X, uint8 dis_Y, uint8 dis_Index, bit Dis_BitPiont)
 		return 2;
 	}
 	return 0;
-
 }
 
 /**
@@ -380,9 +381,9 @@ void Display(void)
 	//bit bIndexBitPiont = 0; //支持字符型选项的位选
 	//bit bParaDisNumorString = 0;
 	uint8 chP_xxY = 0, chMeaningY = 0, chIndexT;
-	bit bIndexBitPiont = 0;		 //判断位选位号在序号还是在参数内容，
-    uint8 bParaDisNumorString = 0; //判断参数显示数字还是显示文字
-	xdata uint8 strlength,strDisX;
+	bit bIndexBitPiont = 0;		   //判断位选位号在序号还是在参数内容，
+	uint8 bParaDisNumorString = 0; //判断参数显示数字还是显示文字
+	xdata uint8 strlength, strDisX;
 	switch (bClearLCD)
 	{
 	case 1:
@@ -458,19 +459,19 @@ void Display(void)
 	bClearLCD = 0;
 	if (chDisSaveFlag > 0)
 	{
-		if(chDisSaveFlag == DISCANCELLOCK)
+		if (chDisSaveFlag == DISCANCELLOCK)
 		{
-			if(chLanguage == 1)
+			if (chLanguage == 1)
 			{
-				LCD_Display(64-36, 16, 9, LEFT, CHS15x16, "请短按P键");
-				LCD_Display(64-32, 32, 8, LEFT, CHS15x16, "解除锁屏");
+				LCD_Display(64 - 36, 16, 9, LEFT, CHS15x16, "请短按P键");
+				LCD_Display(64 - 32, 32, 8, LEFT, CHS15x16, "解除锁屏");
 			}
-			else if(chLanguage == 0)
+			else if (chLanguage == 0)
 			{
-				LCD_Display(64-64, 16, 17, LEFT, EN8x16, "PRESS P TO CANCEL");
-				LCD_Display(64-60, 32, 15, LEFT, EN8x16, "THE LOCK SCREEN");
+				LCD_Display(64 - 64, 16, 17, LEFT, EN8x16, "PRESS P TO CANCEL");
+				LCD_Display(64 - 60, 32, 15, LEFT, EN8x16, "THE LOCK SCREEN");
 			}
-			else if(chLanguage == 2)
+			else if (chLanguage == 2)
 			{
 				LCD_Display(0, 24, 32, LEFT, TR5x7, "Kilidi a\x0e7mak i\x0e7in P tu\x0feuna bas\x0fdn");
 			}
@@ -478,57 +479,51 @@ void Display(void)
 		else
 		{
 			if (chLanguage == 1)
-		{
-			
-			strlength = strlen(HintDisplayMsg[chDisSaveFlag].Chinese);
-			strDisX = strlength/2*8 + strlength%2*4;
-			if(strDisX >= 64)
 			{
-				strDisX = 0;
+
+				strlength = strlen(HintDisplayMsg[chDisSaveFlag].Chinese);
+				strDisX = strlength / 2 * 8 + strlength % 2 * 4;
+				if (strDisX >= 64)
+				{
+					strDisX = 0;
+				}
+				else
+				{
+					strDisX = 64 - strlength / 2 * 8 - strlength % 2 * 4;
+				}
+				LCD_Display(strDisX, 24, strlength, LEFT, CHS15x16, HintDisplayMsg[chDisSaveFlag].Chinese);
 			}
-			else
+			else if (chLanguage == 0)
 			{
-				strDisX = 64 - strlength/2*8 - strlength%2*4;
+
+				strlength = strlen(HintDisplayMsg[chDisSaveFlag].English);
+				strDisX = strlength / 2 * 8 + strlength % 2 * 4;
+				if (strDisX >= 64)
+				{
+					strDisX = 0;
+				}
+				else
+				{
+					strDisX = 64 - strlength / 2 * 8 - strlength % 2 * 4;
+				}
+				LCD_Display(strDisX, 24, strlength, LEFT, Uni8x16, HintDisplayMsg[chDisSaveFlag].English);
 			}
-			LCD_Display(strDisX, 24, strlength , LEFT, CHS15x16, HintDisplayMsg[chDisSaveFlag].Chinese);
-			
-			
+			else if (chLanguage == 2)
+			{
+
+				strlength = strlen(HintDisplayMsg[chDisSaveFlag].Turkey);
+				strDisX = strlength / 2 * 5 + strlength % 2 * 2;
+				if (strDisX >= 64)
+				{
+					strDisX = 0;
+				}
+				else
+				{
+					strDisX = 64 - strlength / 2 * 5 - strlength % 2 * 2;
+				}
+				LCD_Display(strDisX, 24, strlength, LEFT, TR5x7, HintDisplayMsg[chDisSaveFlag].Turkey);
+			}
 		}
-		else if (chLanguage == 0)
-		{
-			
-			strlength = strlen(HintDisplayMsg[chDisSaveFlag].English);
-			strDisX = strlength/2*8 + strlength%2*4;
-			if(strDisX >= 64)
-			{
-				strDisX = 0;
-			}
-			else
-			{
-				strDisX = 64 - strlength/2*8 - strlength%2*4;
-			}
-			LCD_Display(strDisX, 24, strlength , LEFT, Uni8x16, HintDisplayMsg[chDisSaveFlag].English);
-			
-		}
-		else if(chLanguage == 2)
-		{
-			
-			strlength = strlen(HintDisplayMsg[chDisSaveFlag].Turkey);
-			strDisX = strlength/2*5 + strlength%2*2;
-			if(strDisX >= 64)
-			{
-				strDisX = 0;
-			}
-			else
-			{
-				strDisX = 64 - strlength/2*5 - strlength%2*2;
-			}
-			LCD_Display(strDisX, 24, strlength , LEFT, TR5x7, HintDisplayMsg[chDisSaveFlag].Turkey);
-			
-		}
-		}
-		
-		
 	}
 	else
 	{
@@ -573,13 +568,13 @@ void Display(void)
 		case 1:
 		case 8:
 		{
-			
-			#if (DefLOCKSCREEN == 1)
+
+#if (DefLOCKSCREEN == 1)
 			if (chLockScreen.bLockType == 1 && chSetMode == 8)
 			{
 				LCD_DisPicture(128 - 15, 16, 13, 2, 0, chLockFrame);
 			}
-			#endif
+#endif
 			if ((chCommState == 2 || chCommState == 5 || chCommState == 3) && (bTimeOutF == 0))
 			{
 				chFirstNoConnectionDis = 0;
@@ -1032,41 +1027,39 @@ void Display(void)
 
 			bBitChangeIndexOrTemp = 0; //参数位选功能,当前显示在参数区
 			bParaDisNumorString = 1;
-		switch (chMachine)
-		{
+			switch (chMachine)
+			{
 			case 0:
-				if(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != '0')
+				if (ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != '0')
 				{
-					bParaDisNumorString = Display_Unit(128,chP_xxY,chIndexT,bIndexBitPiont);
+					bParaDisNumorString = Display_Unit(128, chP_xxY, chIndexT, bIndexBitPiont);
 				}
 				break;
 			case 1:
-				if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '0')
+				if (ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '0')
 				{
-					bParaDisNumorString = Display_Unit(128,chP_xxY,chIndexT,bIndexBitPiont);
+					bParaDisNumorString = Display_Unit(128, chP_xxY, chIndexT, bIndexBitPiont);
 				}
 				break;
 			case 2:
-				if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '0')
+				if (ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '0')
 				{
-					bParaDisNumorString = Display_Unit(128,chP_xxY,chIndexT,bIndexBitPiont);
+					bParaDisNumorString = Display_Unit(128, chP_xxY, chIndexT, bIndexBitPiont);
 				}
 				break;
-		}
+			}
 
-		
-		switch (chLanguage)
-		{
-			case 0://英文
-				if(chIndexT != 73)
-				{	
-					switch (chMachine)
+			switch (chLanguage)
+			{
+			case 0: //英文
+				if (chIndexT != 73)
 				{
-					case 0://横刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM0.English != '0')
+					switch (chMachine)
+					{
+					case 0: //横刀
+						if (ParaDisplayMsg[chIndexT].ParaDisM0.English != '0')
 						{
-							LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English)\
-								,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM0.English);
+							LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English), LEFT, EN5x7, ParaDisplayMsg[chIndexT].ParaDisM0.English);
 						}
 						else
 						{
@@ -1074,40 +1067,35 @@ void Display(void)
 							goto DIS_EN_NULL;
 						}
 						break;
-					case 1://侧刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM1.English != '0')
+					case 1: //侧刀
+						if (ParaDisplayMsg[chIndexT].ParaDisM1.English != '0')
 						{
-							if(ParaDisplayMsg[chIndexT].ParaDisM1.English != '1')
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM1.English)\
-									,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM1.English);
+							if (ParaDisplayMsg[chIndexT].ParaDisM1.English != '1')
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM1.English), LEFT, EN5x7, ParaDisplayMsg[chIndexT].ParaDisM1.English);
 							else
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English)\
-									,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM0.English);
-						}		
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English), LEFT, EN5x7, ParaDisplayMsg[chIndexT].ParaDisM0.English);
+						}
 						else
 						{
 							bParaDisNumorString = 0;
 							goto DIS_EN_NULL;
 						}
 						break;
-					case 2://倒回缝
-						if(ParaDisplayMsg[chIndexT].ParaDisM2.English != '0')
+					case 2: //倒回缝
+						if (ParaDisplayMsg[chIndexT].ParaDisM2.English != '0')
 						{
-							if(ParaDisplayMsg[chIndexT].ParaDisM2.English != '1')
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM2.English)\
-									,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM2.English);
+							if (ParaDisplayMsg[chIndexT].ParaDisM2.English != '1')
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM2.English), LEFT, EN5x7, ParaDisplayMsg[chIndexT].ParaDisM2.English);
 							else
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English)\
-									,LEFT,EN5x7,ParaDisplayMsg[chIndexT].ParaDisM0.English);
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.English), LEFT, EN5x7, ParaDisplayMsg[chIndexT].ParaDisM0.English);
 						}
 						else
 						{
 							bParaDisNumorString = 0;
 							goto DIS_EN_NULL;
 						}
-						break;		
-				}
-					
+						break;
+					}
 				}
 				else
 				{
@@ -1142,24 +1130,32 @@ void Display(void)
 				}
 				if (bParaDisNumorString == 1)
 				{
-					if(chIndexT != 71&&chIndexT != 72)
+					if (chIndexT != 71 && chIndexT != 72)
+					{
+						//LCD_Display(chStartx, chP_xxY, 1, RIGHT, Uni8x16, " ");//不知道会什么没有这个函数导致下一个函数显示乱码
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, Uni8x16, wIndexTemp, 2);
-					if(chIndexT == 63||chIndexT == 36)
+					}
+
+					if (chIndexT == 63 || chIndexT == 36)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, Uni8x16, wSensorValueReceive[0], 0);
 					}
-					else if(chIndexT == 64||chIndexT == 37)
+					else if (chIndexT == 64 || chIndexT == 37)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, Uni8x16, wSensorValueReceive[1], 0);
 					}
-					else if(chIndexT == 65||chIndexT == 66)
+					else if (chIndexT == 65 || chIndexT == 66)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, Uni8x16, wSensorValueReceive[2], 0);
 					}
-					else if(chIndexT == 71||chIndexT == 72)
+					else if (chIndexT == 71 || chIndexT == 72)
 					{
 						bParaDisNumorString = 2;
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, Uni8x16, wPositAngle, 2); //参数位选功能
+					}
+					else if(chIndexT == 119)
+					{
+						LCD_DisNumberB(LCDSizeX - 24, chP_xxY, 4, RIGHT, Uni8x16, wStepMotorAngle, 0);
 					}
 				}
 				else if (bParaDisNumorString == 0)
@@ -1170,59 +1166,53 @@ void Display(void)
 					break;
 				}
 				break;
-			case 1://中文
-				if(chIndexT != 73)
-				{	
-					
+			case 1: //中文
+				if (chIndexT != 73)
+				{
+
 					switch (chMachine)
 					{
-						case 0://横刀
-							if(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != '0')
-							{	
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese)\
-									,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
-							}
+					case 0: //横刀
+						if (ParaDisplayMsg[chIndexT].ParaDisM0.Chinese != '0')
+						{
+							LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese), LEFT, CHS15x16, ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
+						}
+						else
+						{
+							bParaDisNumorString = 0;
+							goto DIS_ZH_NULL;
+						}
+
+						break;
+					case 1: //侧刀
+						if (ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '0')
+						{
+							if (ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '1')
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese), LEFT, CHS15x16, ParaDisplayMsg[chIndexT].ParaDisM1.Chinese);
 							else
-							{
-								bParaDisNumorString = 0;
-								goto DIS_ZH_NULL;
-							}
-							
-							break;
-						case 1://侧刀
-							if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '0')
-							{	
-								if(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese != '1')
-									LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM1.Chinese)\
-										,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM1.Chinese);
-								else
-									LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese)\
-										,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
-							}
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese), LEFT, CHS15x16, ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
+						}
+						else
+						{
+							bParaDisNumorString = 0;
+							goto DIS_ZH_NULL;
+						}
+						break;
+					case 2: //倒回缝
+						if (ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '0')
+						{
+							if (ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '1')
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese), LEFT, CHS15x16, ParaDisplayMsg[chIndexT].ParaDisM2.Chinese);
 							else
-							{
-								bParaDisNumorString = 0;
-								goto DIS_ZH_NULL;
-							}
-							break;
-						case 2://倒回缝
-							if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '0')
-							{	
-								if(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese != '1')
-									LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM2.Chinese)\
-										,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM2.Chinese);
-								else
-									LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese)\
-										,LEFT,CHS15x16,ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
-							}
-							else
-							{
-								bParaDisNumorString = 0;
-								goto DIS_ZH_NULL;
-							}
-							break;		
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Chinese), LEFT, CHS15x16, ParaDisplayMsg[chIndexT].ParaDisM0.Chinese);
+						}
+						else
+						{
+							bParaDisNumorString = 0;
+							goto DIS_ZH_NULL;
+						}
+						break;
 					}
-					
 				}
 				else
 				{
@@ -1257,24 +1247,32 @@ void Display(void)
 				}
 				if (bParaDisNumorString == 1)
 				{
-					if(chIndexT != 71&&chIndexT != 72)
+					if (chIndexT != 71 && chIndexT != 72)
+					{
+						//LCD_Display(chStartx, chP_xxY, 1, RIGHT, Uni8x16, " ");//不知道会什么没有这个函数导致下一个函数显示乱码
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, Uni8x16, wIndexTemp, 2);
-					if(chIndexT == 63||chIndexT == 36)
+					}
+
+					if (chIndexT == 63 || chIndexT == 36)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, CHS15x16, wSensorValueReceive[0], 0);
 					}
-					else if(chIndexT == 64||chIndexT == 37)
+					else if (chIndexT == 64 || chIndexT == 37)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, CHS15x16, wSensorValueReceive[1], 0);
 					}
-					else if(chIndexT == 65||chIndexT == 66)
+					else if (chIndexT == 65 || chIndexT == 66)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, CHS15x16, wSensorValueReceive[2], 0);
 					}
-					else if(chIndexT == 71||chIndexT == 72)
+					else if (chIndexT == 71 || chIndexT == 72)
 					{
 						bParaDisNumorString = 2;
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, CHS15x16, wPositAngle, 2); //参数位选功能
+					}
+					else if(chIndexT == 119)
+					{
+						LCD_DisNumberB(LCDSizeX - 24, chP_xxY, 4, RIGHT, CHS15x16, wStepMotorAngle, 0);
 					}
 				}
 				else if (bParaDisNumorString == 0)
@@ -1285,17 +1283,16 @@ void Display(void)
 					break;
 				}
 				break;
-			case 2://土耳其
-				if(chIndexT != 73)
-				{	
-				
-				switch (chMachine)
+			case 2: //土耳其
+				if (chIndexT != 73)
 				{
-					case 0://横刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey != '0')
-						{	
-							LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey)\
-								,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
+
+					switch (chMachine)
+					{
+					case 0: //横刀
+						if (ParaDisplayMsg[chIndexT].ParaDisM0.Turkey != '0')
+						{
+							LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey), LEFT, TR5x7, ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
 						}
 						else
 						{
@@ -1303,15 +1300,13 @@ void Display(void)
 							goto DIS_TR_NULL;
 						}
 						break;
-					case 1://侧刀
-						if(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != '0')
-						{	
-							if(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != '1')
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey)\
-									,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM1.Turkey);
+					case 1: //侧刀
+						if (ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != '0')
+						{
+							if (ParaDisplayMsg[chIndexT].ParaDisM1.Turkey != '1')
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM1.Turkey), LEFT, TR5x7, ParaDisplayMsg[chIndexT].ParaDisM1.Turkey);
 							else
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey)\
-									,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey), LEFT, TR5x7, ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
 						}
 						else
 						{
@@ -1319,24 +1314,21 @@ void Display(void)
 							goto DIS_TR_NULL;
 						}
 						break;
-					case 2://倒回缝
-						if(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != '0')
-						{	
-							if(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != '1')
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey)\
-									,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM2.Turkey);
+					case 2: //倒回缝
+						if (ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != '0')
+						{
+							if (ParaDisplayMsg[chIndexT].ParaDisM2.Turkey != '1')
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM2.Turkey), LEFT, TR5x7, ParaDisplayMsg[chIndexT].ParaDisM2.Turkey);
 							else
-								LCD_Display(0,chMeaningY,strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey)\
-									,LEFT,TR5x7,ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
+								LCD_Display(0, chMeaningY, strlen(ParaDisplayMsg[chIndexT].ParaDisM0.Turkey), LEFT, TR5x7, ParaDisplayMsg[chIndexT].ParaDisM0.Turkey);
 						}
 						else
 						{
 							bParaDisNumorString = 0;
 							goto DIS_TR_NULL;
 						}
-						break;		
-				}
-					
+						break;
+					}
 				}
 				else
 				{
@@ -1371,24 +1363,32 @@ void Display(void)
 				}
 				if (bParaDisNumorString == 1)
 				{
-					if(chIndexT != 71&&chIndexT != 72)
+					if (chIndexT != 71 && chIndexT != 72)
+					{
+						//LCD_Display(chStartx, chP_xxY, 1, RIGHT, TR5x7, " ");//不知道会什么没有这个函数导致下一个函数显示乱码
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, TR5x7, wIndexTemp, 2);
-					if(chIndexT == 63||chIndexT == 36)
+					}
+
+					if (chIndexT == 63 || chIndexT == 36)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, TR5x7, wSensorValueReceive[0], 0);
 					}
-					else if(chIndexT == 64||chIndexT == 37)
+					else if (chIndexT == 64 || chIndexT == 37)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, TR5x7, wSensorValueReceive[1], 0);
 					}
-					else if(chIndexT == 65||chIndexT == 66)
+					else if (chIndexT == 65 || chIndexT == 66)
 					{
 						LCD_DisNumberB(LCDSizeX - 40, chP_xxY, 3, RIGHT, TR5x7, wSensorValueReceive[2], 0);
 					}
-					else if(chIndexT == 71||chIndexT == 72)
+					else if (chIndexT == 71 || chIndexT == 72)
 					{
 						bParaDisNumorString = 2;
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, TR5x7, wPositAngle, 2); //参数位选功能
+					}
+					else if(chIndexT == 119)
+					{
+						LCD_DisNumberB(LCDSizeX - 24, chP_xxY, 4, RIGHT, TR5x7, wStepMotorAngle, 0);
 					}
 				}
 				else if (bParaDisNumorString == 0)
@@ -1398,11 +1398,9 @@ void Display(void)
 					LCD_Display(0, chMeaningY, 3, LEFT, TR5x7, "bo\x0fe");
 					break;
 				}
-				
-				break;
-		}
-	
 
+				break;
+			}
 		}
 		break;
 		case 4:
@@ -1503,7 +1501,7 @@ void Display(void)
 				switch (chLanguage)
 				{
 				case 0:
-				
+
 					if (chIndexB == 6)
 					{
 						LCD_Display(64 - 44, 0, 11, LEFT, EN8x16, "CLOTH IDENT");
@@ -1613,8 +1611,8 @@ void Display(void)
 			case 11:
 				if (chLanguage == 1)
 				{
-					LCD_Display(64-60, 16, 15, LEFT, CHS15x16, "布料识别失败,请");
-					LCD_Display(64-64, 32, 16, LEFT, CHS15x16, "按电眼键重新识别");
+					LCD_Display(64 - 60, 16, 15, LEFT, CHS15x16, "布料识别失败,请");
+					LCD_Display(64 - 64, 32, 16, LEFT, CHS15x16, "按电眼键重新识别");
 				}
 				else if (chLanguage == 2)
 				{
@@ -1766,7 +1764,7 @@ void Display(void)
 					LCD_DisplayB(100, 40, 5, RIGHT, CHS15x16, "转/分", 0, 1);
 					LCD_DisNumberB(chStartx, 40, 4, RIGHT, EN8x16, wIndexTemp, 0);
 				}
-				else if (chLanguage == 0)  
+				else if (chLanguage == 0)
 				{
 					LCD_Display(64 - 36, 8, 9, LEFT, EN8x16, "MAX SPEED");
 					LCD_DisplayB(96, 40, 3, RIGHT, EN8x16, "RPM", 0, 1);
@@ -1788,7 +1786,7 @@ void Display(void)
 					LCD_DisNumberB(52, 40, 1, LEFT, EN8x16, wIndexTemp, 0);
 					LCD_Display(60, 40, 2, LEFT, CHS15x16, "档");
 				}
-				else if (chLanguage == 0) 
+				else if (chLanguage == 0)
 				{
 					LCD_Display(60 - 24, 8, 7, LEFT, EN8x16, "LED Bri");
 					LCD_Display(68, 40, 3, RIGHT, EN8x16, "LV.");
@@ -1880,8 +1878,6 @@ void Display(void)
 	}
 }
 
-
-
 /**
   * @brief   播放故障代码的语音
   * @param   
@@ -1908,28 +1904,28 @@ void DisplayException(void) //错误显示
 		return;
 	}
 	if (chLanguage == 1)
-		{
-			LCD_Display(20, 8, 9, LEFT, CHS15x16, "故障代码:");
-			chStartx = 92;
-		}
-		else if (chLanguage == 0)
-		{
-			LCD_Display(12, 8, 11, LEFT, EN8x16, "ERROR CODE:");
-			chStartx = 100;
-		}
-		else
-		{
-			LCD_Display(0, 0, 10, LEFT, TR5x7, "Hata kodu:");
-			chStartx = 60;
-		}
-		
+	{
+		LCD_Display(20, 8, 9, LEFT, CHS15x16, "故障代码:");
+		chStartx = 92;
+	}
+	else if (chLanguage == 0)
+	{
+		LCD_Display(12, 8, 11, LEFT, EN8x16, "ERROR CODE:");
+		chStartx = 100;
+	}
+	else
+	{
+		LCD_Display(0, 0, 10, LEFT, TR5x7, "Hata kodu:");
+		chStartx = 60;
+	}
+
 	if (wException != 0 && bTimeOutF == 0)
 	{
-		xdata uint8 strlength,strDisX,i;
+		xdata uint8 strlength, strDisX, i;
 		uint8 chErrorCodeSer = 0;
 		for (i = 0; i < 16; i++)
 		{
-			if(i == 15)
+			if (i == 15)
 			{
 				if ((wException & E_HANDCUT) > 0)
 				{
@@ -1954,56 +1950,52 @@ void DisplayException(void) //错误显示
 					chErrorCodeSer = ErrorDisplayMsg[i].ErrorCode;
 					if (chLanguage == 1)
 					{
-			
+
 						strlength = strlen(ErrorDisplayMsg[i].ErrorDis.Chinese);
-						strDisX = strlength/2*8 + strlength%2*4;
-						if(strDisX >= 64)
+						strDisX = strlength / 2 * 8 + strlength % 2 * 4;
+						if (strDisX >= 64)
 						{
 							strDisX = 0;
 						}
 						else
 						{
-							strDisX = 64 - strlength/2*8 - strlength%2*4;
+							strDisX = 64 - strlength / 2 * 8 - strlength % 2 * 4;
 						}
-						LCD_Display(strDisX, 32, strlength , LEFT, CHS15x16, ErrorDisplayMsg[i].ErrorDis.Chinese);
-	
+						LCD_Display(strDisX, 32, strlength, LEFT, CHS15x16, ErrorDisplayMsg[i].ErrorDis.Chinese);
 					}
 					else if (chLanguage == 0)
 					{
-			
+
 						strlength = strlen(ErrorDisplayMsg[i].ErrorDis.English);
-						strDisX = strlength/2*5 + strlength%2*2;
-						if(strDisX >= 64)
+						strDisX = strlength / 2 * 5 + strlength % 2 * 2;
+						if (strDisX >= 64)
 						{
 							strDisX = 0;
 						}
 						else
 						{
-							strDisX = 64 - strlength/2*5 - strlength%2*2;
+							strDisX = 64 - strlength / 2 * 5 - strlength % 2 * 2;
 						}
-						LCD_Display(strDisX, 32, strlength , LEFT, EN5x7, ErrorDisplayMsg[i].ErrorDis.English);
-			
+						LCD_Display(strDisX, 32, strlength, LEFT, EN5x7, ErrorDisplayMsg[i].ErrorDis.English);
 					}
-					else if(chLanguage == 2)
+					else if (chLanguage == 2)
 					{
-			
+
 						strlength = strlen(ErrorDisplayMsg[i].ErrorDis.Turkey);
-						strDisX = strlength/2*5 + strlength%2*2;
-						if(strDisX >= 64)
+						strDisX = strlength / 2 * 5 + strlength % 2 * 2;
+						if (strDisX >= 64)
 						{
 							strDisX = 0;
 						}
 						else
 						{
-							strDisX = 64 - strlength/2*5 - strlength%2*2;
+							strDisX = 64 - strlength / 2 * 5 - strlength % 2 * 2;
 						}
-						LCD_Display(strDisX, 16, strlength , LEFT, TR5x7, ErrorDisplayMsg[i].ErrorDis.Turkey);
+						LCD_Display(strDisX, 16, strlength, LEFT, TR5x7, ErrorDisplayMsg[i].ErrorDis.Turkey);
 					}
 					break;
 				}
 			}
-			
-			
 		}
 		if (chLanguage < 2)
 		{
@@ -2013,7 +2005,6 @@ void DisplayException(void) //错误显示
 		{
 			LCD_DisNumberB(chStartx, 0, 2, LEFT, TR5x7, chErrorCodeSer, 0);
 		}
-		
 	}
 	else
 	{
@@ -2042,8 +2033,6 @@ void DisplayException(void) //错误显示
 			//return;
 		}
 	}
-		
-	
 }
 void TestException(void)
 {
@@ -2106,7 +2095,7 @@ void BreathingLED(void)
 #endif
 void TestWorkStatus(void)
 {
-	if (PlayVoiceMCU == 1||PlayVoiceMCU == 4)
+	if (PlayVoiceMCU == 1 || PlayVoiceMCU == 4)
 	{
 		if (SPI_RDY == 0)
 		{
@@ -2230,4 +2219,3 @@ void PowerOnVoice(void)
 		}
 	}
 }
-

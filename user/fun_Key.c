@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-08-28 11:12:05
+ * @LastEditTime: 2020-09-05 10:38:14
  * @LastEditors: Please set LastEditors
  */
 #include "fun_Key.h"
@@ -37,7 +37,7 @@ void KeyGPIOInit(void)
 	{
 		P2CR = Bin(11111111);
 		P2PCR = Bin(11111111);
-		P2 = Bin(11110000);
+		P2 = Bin(00001111);
 	}
 }
 
@@ -136,6 +136,7 @@ void ScanKey(void)
 			{
 				LED_Reverse(LED_Name_ALL, 0);
 			}
+			// LED_Reverse(LED_Name_ALL, 1);
 			chKey.dwKey1 = dwKeytemp;
 			chKey.chTime3 = 0;
 		}
@@ -201,7 +202,7 @@ void ScanKey(void)
 			if (chKey.chTime3 > chTouchKeyScanTime * 2 && chKey.bKeyPress == 0)
 			{
 				chKey.chTime3 = 0;
-				chKey.dwKey1 = K_CLOTHSETSINGLE;
+				chKey.dwKey1 = K_CLOTHSET;
 				chKey.chKeyIndex = 1;
 				goto KEY;
 			}
@@ -481,14 +482,25 @@ void ScanKey(void)
 		chKey.bKeyPress = 0;
 		return;
 	}
-
+	if ((chKey.dwKey1 == K_SET) && (chSetMode == 1 || chSetMode == 8)) //复位键按下，且面面膜的按键均未按下
+	{
+		if ((chKey.chTime3 > chTouchKeyScanTime * 3)) //在此后面与上chKey.chKeyIndex == 0表示长按键只有在此之前没有按键按下时才会被判定
+		{
+			chKey.chTime3 = 0;
+			chKey.dwKey1 = K_SET;
+			chKey.chKeyIndex = 1;
+			goto KEY;
+		}
+		chKey.bKeyPress = 0;
+		return;
+	}
 	//三次采集到的值一样的处理
 	if (chKey.chTime3 == KEYScanTime)
 	{
 		chKey.chTime3 = 0;
 		if (chKey.dwKey1 == 0)
 		{
-		TOUCHLONGKEY:
+	//	TOUCHLONGKEY:
 			chKey.bKeyPress = 0;
 			if (chKey.chKeyIndex == 2)
 			{
@@ -683,6 +695,26 @@ void ProcessKey()
 		{
 			switch (chKey.dwKey)
 			{
+			case K_ADMIN: //主界面PS  或UP RIGHT键进入密码输入界面，输入正确一次便不需要再次输入
+			{
+				if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+				{
+					chSetMode = 6;
+					chIndexB = 1;
+					chIndexTempBit = 4;
+					bIndexTempBitChange = 1;
+					wIndexTemp = 0;
+				}
+				else
+				{
+					chIndexTempBit = 5; //参数位选功能
+					bIndexTempBitChange = 1;
+					chSetMode = 2;
+					wIndexTemp = ReadIndexTemp(chIndex);
+					PLAYBACK(4);
+				}
+				break;
+			}
 			case K_PS:
 			{
 				if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
@@ -1456,10 +1488,13 @@ void ProcessKey()
 					break;
 				}
 				case 7:
+				case 11:
 				{
 					ClearTimeBack();
 					chClothSet.bComplete = 0;
 					chClothSet.chProgress = 0;
+					chIndexB = 7;
+					bClearLCD = 1;
 					if (chIndexC == 0)
 						StartSendCommand(6, 2);
 					else if (chIndexC == 1)
@@ -1470,7 +1505,10 @@ void ProcessKey()
 				}
 				default:
 				{
-					GoToHome();
+					if(chIndexB != 12)
+					{
+						GoToHome();
+					}
 					break;
 				}
 				}
@@ -1493,6 +1531,18 @@ void ProcessKey()
 						chIndexC = DecPara(chIndexC, 2, 0, 1);
 					else
 						chIndexC = IncPara(chIndexC, 2, 0, 1);
+					if (chIndexC == 0)
+					{
+						PLAYBACK(77);
+					}
+					else if (chIndexC == 1)
+					{
+						PLAYBACK(76);
+					}
+					else if (chIndexC == 2)
+					{
+						PLAYBACK(78);
+					}
 				}
 				else
 				{
@@ -1514,17 +1564,17 @@ void ProcessKey()
 					if (chIndexC == 0)
 					{
 						StartSendCommand(6, 2);
-						PLAYBACK(77);
+						//PLAYBACK(77);
 					}
 					else if (chIndexC == 1)
 					{
 						StartSendCommand(5, 2);
-						PLAYBACK(76);
+						//PLAYBACK(76);
 					}
 					else if (chIndexC == 2)
 					{
 						StartSendCommand(7, 2);
-						PLAYBACK(78);
+						//PLAYBACK(78);
 					}
 				}
 				else if (chIndexB == 10) //布料选择模式
@@ -2205,7 +2255,7 @@ void Flash_LED(void)
 	}
 	if (chKey.dwKey1 != 0x0000)
 	{
-		chFlashLCDCount = chFlashLCDCount + 13;
+		chFlashLCDCount = chFlashLCDCount + 14;
 	}
 	chFlashLCDCount++;
 	LED_Reverse(LED_Name_ALL, 0);
@@ -2273,6 +2323,11 @@ void Flash_LED(void)
 		break;
 	}
 	case 13:
+	{
+		LED_Reverse(LED_Name_ALL, 0);
+		break;
+	}
+	case 14:
 	{
 		LED_Reverse(LED_Name_ALL, 0);
 		break;
