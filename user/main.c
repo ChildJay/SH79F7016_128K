@@ -2,7 +2,7 @@
  * @Description: MAIN
  * @Author: XPH
  * @Date: 2019-09-16 08:09:42
- * @LastEditTime: 2020-08-29 11:47:58
+ * @LastEditTime: 2020-09-07 15:11:05
  * @LastEditors: Please set LastEditors
  */
 #include "includes.h"
@@ -37,6 +37,9 @@ void main(void)
 		{
 			Clear20ms();
 			Chip_4_DataSend();
+#if (DefLOCKSCREEN == 1)
+			TestLockScreen();
+#endif
 		}
 		if (Get5Ms())
 		{
@@ -60,67 +63,62 @@ void main(void)
 			}
 			CountTimeBack();
 
-			
 			BuzzleDelay();
 			GoHomeSendData();
 #if (DefONEKEYTEST == 1)
 			TestOneKeyTest();
 #endif
-#if (DefLOCKSCREEN == 1)
-			TestLockScreen();
-#endif	
+
 #if (DefSpeedLimitENABLE == 1)
 			TestValue();
 #endif
 #if (DefBreathLED == 1)
 			BreathingLED();
 #endif
-			
 		}
-		 // 当有键按下时
-        if (chKey.bKeyNotify)
-        {
-            chKey.bKeyNotify = 0;
+		// 当有键按下时
+		if (chKey.bKeyNotify)
+		{
+			chKey.bKeyNotify = 0;
 
-            ClearTimeBack();
-            ClearTimeBack1();
-            bDisplayOn = 1; 
+			ClearTimeBack();
+			ClearTimeBack1();
+			bDisplayOn = 1;
 			if (chDisSaveFlag > 0)
-            {
-                chDisSaveFlag = 0;
-                bClearFlag = 1;
+			{
+				chDisSaveFlag = 0;
+				bClearFlag = 1;
 				bClearLCD = 1;
-            }
+			}
 			else
 			{
 				bClearLCD = 1;
-           		ProcessKey();
+				ProcessKey();
 			}
-            if (chKey.bKeyContinue == 0)
-            {
-                BuzzleStart();
-            }
-			
-        }
+			if (chKey.bKeyContinue == 0)
+			{
+				BuzzleStart();
+			}
+		}
 
-        if ((bDisplayOn) && (bPowerOn == 0))
-        {
-            bDisplayOn = 0;
-            Display();
-        }
+		if ((bDisplayOn) && (bPowerOn == 0))
+		{
+			bDisplayOn = 0;
+			Display();
+		}
 
-        if ((bPowerOn == 1) && (chPowerOn < 10))
-        {
-            bPowerOn = 0;
-            PowerOnShakeHands();
-        }
+		if ((bPowerOn == 1) && (chPowerOn < 10))
+		{
+			bPowerOn = 0;
+			PowerOnShakeHands();
+		}
 		TestReadInfo();
-        TestTimeBack();
-        TestBuzzle();
-        TestVoiceStatus();
-        PlayBackExceptionInfo();
+		TestTimeBack();
+		TestBuzzle();
+		TestVoiceStatus();
+		PlayBackExceptionInfo();
 		ProcessPacket(); // 处理数据包
-        ProcessTimeOut();
-        Comm();
+		ProcessTimeOut();
+		Comm();
 	}
 }

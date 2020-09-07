@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-05 08:58:02
+ * @LastEditTime: 2020-09-07 14:34:55
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DataProcess.h"
@@ -179,7 +179,7 @@ void ReadSewData(void)
 	uchar i;
 	uchar ErrorDataCount = 0;
 	//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * EEPROM_USER_START_BLOCK,(uint8 *)&EEPROM_buffer,tblDataNum);
-	if (ReadDataB(0, 1) < 100 || ReadDataB(0, 1) > 9999)//判断新旧屏幕
+	if ((int)ReadDataB(0, 1) < 100 || (int)ReadDataB(0, 1) > 9999) //判断新旧屏幕
 	{
 		auto_clearEEprom(2);
 	}
@@ -191,7 +191,7 @@ void ReadSewData(void)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			if (EEPROM_buffer[i] > 9999)
+			if ((int)EEPROM_buffer[i] > 9999)
 			{
 				ErrorDataCount = 1;
 				break;
@@ -207,12 +207,15 @@ void ReadSewData(void)
 			}
 			for (i = 0; i < tblDataNum; i++)
 			{
-				ErrorDataCount = 2;
-				break;
+				if ((int)EEPROM_buffer[i] > 9999)
+				{
+					ErrorDataCount = 2;
+					break;
+				}
 			}
 			if (ErrorDataCount == 1)
 				auto_clearEEprom(3);
-			else
+			else if (ErrorDataCount == 2)
 				auto_clearEEprom(2);
 		}
 	}
@@ -393,7 +396,7 @@ void auto_clearEEprom(uchar chResetLevel)
 			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
 		}
 	}
-	else if (chResetLevel == 3)//数据保护恢复设置
+	else if (chResetLevel == 3) //数据保护恢复设置
 	{
 		for (i = 0; i < tblDataNum; i++)
 		{
@@ -514,7 +517,7 @@ int ReadIndexTemp(uchar chIndexX)
 			i = 13;
 			wSensorValueReceive[2] = 0;
 			goto A_PKEYINFO;
-		case 119://步进点击角度
+		case 119: //步进点击角度
 			i = 15;
 			wStepMotorAngle = 0;
 			goto A_PKEYINFO;

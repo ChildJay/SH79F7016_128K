@@ -2,7 +2,7 @@
  * @Description: 芯片内部数据存储(实际新茂芯片为flash)
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-09-02 09:20:03
+ * @LastEditTime: 2020-09-07 15:46:05
  * @LastEditors: Please set LastEditors
  */
 #include "bsp_eeprom.h"
@@ -282,7 +282,7 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 	//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * chStartBlock, (uint8 *)&EEPROM_buffer, tblDataNum);
 	for (i = 0; i < tblDataNum; i++)
 	{
-		EEPROM_buffer[i] = ReadDataB(i, Block);
+		EEPROM_buffer[i] = ReadDataB(i, 0);
 	}
 	EEPROM_buffer[add_w] = dat_w; //写数据
 	for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)

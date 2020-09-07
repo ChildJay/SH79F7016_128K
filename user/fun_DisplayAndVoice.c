@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-05 08:56:28
+ * @LastEditTime: 2020-09-07 15:13:24
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DisplayAndVoice.h"
@@ -353,7 +353,8 @@ void TestLockScreen(void)
 			else
 			{
 				chLockScreen.wLockTimeCount++;
-				if (chLockScreen.wLockTimeCount >= chLockScreen.chLockSetTime * 1000 / 5)
+				//if (chLockScreen.wLockTimeCount >= chLockScreen.chLockSetTime * 1000 / 20)
+				if (chLockScreen.wLockTimeCount >= chLockScreen.chLockSetTime * 50)
 				{
 					chLockScreen.wLockTimeCount = 0;
 					chLockScreen.bLockType = 1;
