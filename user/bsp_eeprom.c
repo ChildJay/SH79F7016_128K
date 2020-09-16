@@ -2,7 +2,7 @@
  * @Description: 芯片内部数据存储(实际新茂芯片为flash)
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-09-07 15:46:05
+ * @LastEditTime: 2020-09-15 21:08:49
  * @LastEditors: Please set LastEditors
  */
 #include "bsp_eeprom.h"
@@ -275,7 +275,7 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(chStartBlock, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 		}
 	}
 	chStartBlock = EEPROM_USER_START_BLOCK;
@@ -291,7 +291,7 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 	}
 	for (i = 0; i < tblDataNum; i++)
 	{
-		eeprom_write_word(chStartBlock, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+		eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 	}
 }
 
@@ -333,7 +333,7 @@ void StartWriteIndivWriteData(uint8 chLength, uint8 Block)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(chStartBlock, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 		}
 	}
 
@@ -353,6 +353,6 @@ void StartWriteIndivWriteData(uint8 chLength, uint8 Block)
 	}
 	for (i = 0; i < tblDataNum; i++)
 	{
-		eeprom_write_word(chStartBlock, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+		eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 	}
 }

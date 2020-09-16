@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-07 14:34:55
+ * @LastEditTime: 2020-09-15 21:22:59
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DataProcess.h"
@@ -51,7 +51,8 @@ xdata uchar chSensor = 0;  //¶ÁÈ¡µçÑÛÊı¾İµÄ±êÖ¾Î»£¬11,12,13·Ö±ğÎªÇ°ÖĞºóµçÑÛµÄ²ÎÊ
 xdata uint wTimeBack = 0;  //Ò³ÃæÌø×ªµÄÊ£ÓàÊ±¼ä¼ÆÊı
 xdata uint wTimeBack1 = 0; //ÌáÊ¾ÓïÏÔÊ¾µÄÊ£ÓàÊ±¼ä¼ÆÊı
 
-xdata uchar chPowerOn = 50;   // ÉÏµç¼ÆÊ±
+//xdata uchar chPowerOn = 50;   // ÉÏµç¼ÆÊ±
+xdata uchar chPowerOn = 100;   // ÉÏµç¼ÆÊ±
 xdata uchar chResetCount = 0; //Õë¿×Ê½µÄ»Ö¸´³ö³§ÉèÖÃ´ÎÊı¼ÆÊı
 bit bPassIdenti = 0;		  //¹ÜÀíÔ±È¨ÏŞ±êÖ¾Î»£¬´¥Ãş°´¼üÓÃ
 xdata uint wCanSave = 1000;   //·ÀÖ¹Òì³£µôµçµ¼ÖÂµÄÊı¾İ¶ªÊ§µÄÊı¾İ±£»¤Ê±¼ä¼ÆÊı
@@ -354,7 +355,7 @@ void auto_clearEEprom(uchar chResetLevel)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 		}
 		// È«²¿»Ö¸´
 	}
@@ -368,8 +369,8 @@ void auto_clearEEprom(uchar chResetLevel)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
-			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS+ 2 * (i % 128), EEPROM_buffer[i]);
 		}
 		// È«²¿»Ö¸´
 	}
@@ -392,8 +393,8 @@ void auto_clearEEprom(uchar chResetLevel)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
-			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 		}
 	}
 	else if (chResetLevel == 3) //Êı¾İ±£»¤»Ö¸´ÉèÖÃ
@@ -409,8 +410,8 @@ void auto_clearEEprom(uchar chResetLevel)
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
-			eeprom_write_word(EEPROM_USER_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
-			eeprom_write_word(EEPROM_SET_START_BLOCK, EEPROM_START_ADDRESS + 2 * i, EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 		}
 	}
 }
@@ -517,7 +518,7 @@ int ReadIndexTemp(uchar chIndexX)
 			i = 13;
 			wSensorValueReceive[2] = 0;
 			goto A_PKEYINFO;
-		case 119: //²½½øµã»÷½Ç¶È
+		case 107: //²½½øµã»÷½Ç¶È
 			i = 15;
 			wStepMotorAngle = 0;
 			goto A_PKEYINFO;
@@ -933,7 +934,7 @@ void SaveIndexTemp(uchar chIndexX, uint wIndexTempX)
 		case 71:
 		case 72:
 		case 73:
-		case 119:
+		case 107:
 			bReadInfo = 1;
 			break;
 		default:

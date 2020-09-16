@@ -2,7 +2,7 @@
  * @Description: MAIN
  * @Author: XPH
  * @Date: 2019-09-16 08:09:42
- * @LastEditTime: 2020-09-07 15:11:05
+ * @LastEditTime: 2020-09-15 21:19:10
  * @LastEditors: Please set LastEditors
  */
 #include "includes.h"
@@ -107,7 +107,7 @@ void main(void)
 			Display();
 		}
 
-		if ((bPowerOn == 1) && (chPowerOn < 10))
+		if ((bPowerOn == 1) && (chPowerOn < 50))
 		{
 			bPowerOn = 0;
 			PowerOnShakeHands();

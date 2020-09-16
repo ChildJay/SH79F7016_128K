@@ -2,7 +2,7 @@
  * @Description: 通讯信号处理
  * @Author: xph
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-05 08:54:47
+ * @LastEditTime: 2020-09-15 19:02:22
  * @LastEditors: Please set LastEditors
  */
 #include "Comm.h"
@@ -649,9 +649,15 @@ A_PPLoop:
 			else
 			{
 				chTEST = 1;
-				wException = chReadData[(chReadHead + 4) % LENGTHREAD];
+				wException = chReadData[(chReadHead + 2) % LENGTHREAD];
+				wException <<= 8;
+				wException = chReadData[(chReadHead + 3) % LENGTHREAD];
+				wException <<= 8;
+				wException |= chReadData[(chReadHead + 4) % LENGTHREAD];
 				wException <<= 8;
 				wException |= chReadData[(chReadHead + 5) % LENGTHREAD];
+				// wException <<= 8;
+				// wException |= chReadData[(chReadHead + 7) % LENGTHREAD];
 
 				if (chSetMode == 1)
 				{
@@ -861,11 +867,11 @@ A_PPLoop:
 				chIndexSend = chIndexSend >> 2;
 				chIndexSend = chIndexSend + 1;
 
-				if (chIndexSend == 32)
+				if (chIndexSend == tblDataSendGroupNum)
 				{
 					if (chTEST == 0)
 					{
-						chIndexSend = 31;
+						chIndexSend = tblDataSendGroupNum - 1;
 						bSend = 1;
 						chTimeOutTime = 4;
 					}
@@ -1027,6 +1033,7 @@ A_PPLoop:
 			goto A_PPLoop;
 		}
 		break;
+		#if 0
 	// ISP
 	case 99:
 		if (i < 6)
@@ -1066,7 +1073,7 @@ A_PPLoop:
 			goto A_PPLoop;
 		}
 		break;
-
+	#endif
 	default:
 
 		// 移动指针

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-07 15:13:24
+ * @LastEditTime: 2020-09-15 19:54:24
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DisplayAndVoice.h"
@@ -1154,7 +1154,7 @@ void Display(void)
 						bParaDisNumorString = 2;
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, Uni8x16, wPositAngle, 2); //参数位选功能
 					}
-					else if(chIndexT == 119)
+					else if(chIndexT == 107)
 					{
 						LCD_DisNumberB(LCDSizeX - 24, chP_xxY, 4, RIGHT, Uni8x16, wStepMotorAngle, 0);
 					}
@@ -1271,7 +1271,7 @@ void Display(void)
 						bParaDisNumorString = 2;
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, CHS15x16, wPositAngle, 2); //参数位选功能
 					}
-					else if(chIndexT == 119)
+					else if(chIndexT == 107)
 					{
 						LCD_DisNumberB(LCDSizeX - 24, chP_xxY, 4, RIGHT, CHS15x16, wStepMotorAngle, 0);
 					}
@@ -1387,7 +1387,7 @@ void Display(void)
 						bParaDisNumorString = 2;
 						LCD_DisNumberB(chStartx, chP_xxY, chIndexTempBitMAX, RIGHT, TR5x7, wPositAngle, 2); //参数位选功能
 					}
-					else if(chIndexT == 119)
+					else if(chIndexT == 107)
 					{
 						LCD_DisNumberB(LCDSizeX - 24, chP_xxY, 4, RIGHT, TR5x7, wStepMotorAngle, 0);
 					}
@@ -1924,9 +1924,10 @@ void DisplayException(void) //错误显示
 	{
 		xdata uint8 strlength, strDisX, i;
 		uint8 chErrorCodeSer = 0;
-		for (i = 0; i < 16; i++)
+		for (i = 0; i < 20; i++)
 		{
-			if (i == 15)
+			#if 0
+			if (i == 19)
 			{
 				if ((wException & E_HANDCUT) > 0)
 				{
@@ -1997,6 +1998,57 @@ void DisplayException(void) //错误显示
 					break;
 				}
 			}
+			#endif
+				if (wException & ErrorDisplayMsg[i].ErrorMask)
+				{
+					chErrorCodeSer = ErrorDisplayMsg[i].ErrorCode;
+					if (chLanguage == 1)
+					{
+
+						strlength = strlen(ErrorDisplayMsg[i].ErrorDis.Chinese);
+						strDisX = strlength / 2 * 8 + strlength % 2 * 4;
+						if (strDisX >= 64)
+						{
+							strDisX = 0;
+						}
+						else
+						{
+							strDisX = 64 - strlength / 2 * 8 - strlength % 2 * 4;
+						}
+						LCD_Display(strDisX, 32, strlength, LEFT, CHS15x16, ErrorDisplayMsg[i].ErrorDis.Chinese);
+					}
+					else if (chLanguage == 0)
+					{
+
+						strlength = strlen(ErrorDisplayMsg[i].ErrorDis.English);
+						strDisX = strlength / 2 * 5 + strlength % 2 * 2;
+						if (strDisX >= 64)
+						{
+							strDisX = 0;
+						}
+						else
+						{
+							strDisX = 64 - strlength / 2 * 5 - strlength % 2 * 2;
+						}
+						LCD_Display(strDisX, 32, strlength, LEFT, EN5x7, ErrorDisplayMsg[i].ErrorDis.English);
+					}
+					else if (chLanguage == 2)
+					{
+
+						strlength = strlen(ErrorDisplayMsg[i].ErrorDis.Turkey);
+						strDisX = strlength / 2 * 5 + strlength % 2 * 2;
+						if (strDisX >= 64)
+						{
+							strDisX = 0;
+						}
+						else
+						{
+							strDisX = 64 - strlength / 2 * 5 - strlength % 2 * 2;
+						}
+						LCD_Display(strDisX, 16, strlength, LEFT, TR5x7, ErrorDisplayMsg[i].ErrorDis.Turkey);
+					}
+					break;
+				}
 		}
 		if (chLanguage < 2)
 		{

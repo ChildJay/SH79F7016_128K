@@ -2,28 +2,33 @@
  * @Description: 存储缝纫机默认参数等
  * @Author: XPH
  * @Date: 2019-09-16 09:07:43
- * @LastEditTime: 2020-08-29 10:44:59
+ * @LastEditTime: 2020-09-16 14:07:09
  * @LastEditors: Please set LastEditors
  */
 #ifndef __SEWMACHINEDATA_H
 #define __SEWMACHINEDATA_H
 #include "basic_api.h"
 #include "UserDefine.h"
-#define tblDataNum 128
+#include "bsp_eeprom.h"
+//#define tblDataNum 128
 
 extern code uint8 tblMachine[10];
-extern code int16 tblPara[3][128];
-extern code int16 tblRange[128][3];
+extern code int16 tblPara[3][tblDataNum];
+extern code int16 tblRange[tblDataNum][3];
 #define OffsetAddrNum 12
 #define tblIndexLengthANum 32
 extern code uint8 tblOffsetAddr[OffsetAddrNum];
 
-#define  IndexLengthA 60
-#define  IndexLengthB 82
+#define  IndexLengthA 60 + 20
+#define  IndexLengthB 82 + 20
+
 
 extern code uint8 tblIndexLengthA[IndexLengthA];
 extern code uint8 tblIndexLengthB[IndexLengthB];
-
+#if DefAdminParaMode
+#define  IndexLengthC 127
+extern code uint8 tblIndexLengthC[IndexLengthC];
+#endif
 
 extern code uint8 tbIndexList[9][20];
 extern code uint8 tblFastFunc[10];
@@ -54,7 +59,7 @@ typedef struct
 
 }ParaDisplayMsg_Typedef;
 extern code ParaDisplayMsg_Typedef ParaDisplayMsg[];
-extern code uint8 tblParaUnitOROptions[6][128];
+extern code uint8 tblParaUnitOROptions[6][tblDataNum];
 extern code LanguageDisplayMsg_Typedef UnitDisplayMsg[];
 typedef struct
 {

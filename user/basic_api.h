@@ -2,13 +2,15 @@
  * @Description: 基础通用API
  * @Author: XPH
  * @Date: 2019-09-14 08:14:32
- * @LastEditTime: 2020-08-27 14:35:59
+ * @LastEditTime: 2020-09-16 14:06:23
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BASIC_API_H
 #define __BASIC_API_H
 
 #include "reg_it.h"
+
+#define DefAdminParaMode 0
 
 #define DefBeepPWM 0         //0：IO 1：PWM
 #define DefSPISoftORHard 0   //0:软件 1：硬件

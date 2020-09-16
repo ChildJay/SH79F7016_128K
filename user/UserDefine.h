@@ -2,14 +2,14 @@
  * @Description: 宏定义
  * @Author: XPH
  * @Date: 2019-09-13 16:52:45
- * @LastEditTime: 2020-09-05 08:49:50
+ * @LastEditTime: 2020-09-15 20:45:24
  * @LastEditors: Please set LastEditors
  */
 #ifndef __USERFINE_H
 #define __USERFINE_H
 #include "reg_it.h"
 //#define PANELVER 5424
-#define PANELVER 7201
+#define PANELVER 7202
 
 #define ADMINPWD 2004
 #define ADMINVER 000
@@ -31,8 +31,13 @@
 #define E_COM 8192
 #define E_OVERCURB 16384  // 过流故障B
 #define E_START 32768     // 电机启动失败
-#define E_OIL 65536       // 油位感应
-#define E_HANDCUT 0x40000 //手动感应
+//#define E_OIL 65536       // 油位感应
+//#define E_HANDCUT 0x40000 //手动感应
+#define E_STEPER_NO_MOTOR  0x10000   
+#define E_STEPER_ENCODER   0x20000   
+#define E_STEPER_FIND_ZERO 0x40000
+#define E_STEPER_FO  0x80000   
+#define E_STEPER_STEM  0x100000   
 
 #define IndexBMODE 0
 #define IndexBWIN 1
@@ -89,6 +94,6 @@
 
 #define LENGTH_SEW_A 25 // 参数A项数
 #define LENGTH_SEW_B 44     // 参数B项数
-#define LENGTH_SEW_C 24 + 13 + 20//6    // 参数C项数, 出厂参数
-
+#define LENGTH_SEW_C 24 + 13 + 21 + 4//6    // 参数C项数, 出厂参数
+#define LENGTH_SEW_Admin 0//6    // 管理员参数
 #endif

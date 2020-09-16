@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-05 10:38:14
+ * @LastEditTime: 2020-09-16 14:09:48
  * @LastEditors: Please set LastEditors
  */
 #include "fun_Key.h"
@@ -697,7 +697,8 @@ void ProcessKey()
 			{
 			case K_ADMIN: //主界面PS  或UP RIGHT键进入密码输入界面，输入正确一次便不需要再次输入
 			{
-				if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+				if (!bAdmin)
+				//if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 				{
 					chSetMode = 6;
 					chIndexB = 1;
@@ -717,7 +718,8 @@ void ProcessKey()
 			}
 			case K_PS:
 			{
-				if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+				if (!bPassIdenti && !bAdmin)
+				//if (chSetLength != LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 				{
 					chSetMode = 6;
 					chIndexB = 0; //高级密码
@@ -840,6 +842,7 @@ void ProcessKey()
 				bIndexTempBitChange = 1;
 				break;
 			}
+			/*
 			// 进入LED灯相关参数
 			case K_LEFTLONG:
 			case K_RIGHTLONG:
@@ -849,6 +852,7 @@ void ProcessKey()
 				bIndexTempBitChange = 1;
 				break;
 			}
+			*/
 			case K_MODELONG:
 			{
 				JumpToPageData(JumpToMode_3_IndexList, 0, 0);
@@ -962,19 +966,6 @@ void ProcessKey()
 					{
 						if (chKey.dwKey == K_UP)
 						{
-							//chIndex = IncPara(chIndex, chSetLength - 1, 0, 1);
-							/*
-							if (chSetLength == LENGTH_SEW_A + 6)
-							{
-								chIndexC = IncPara(chIndexC, tblIndexLengthANum, 0, 1);
-								chIndex = tblIndexLengthA[chIndexC];
-							}
-							else
-							{
-								chIndex = IncPara(chIndex, chSetLength - 1, 0, 1);
-							}
-							PLAYBACK(13);
-							*/
 							if (chSetLength == IndexLengthA)
 							{
 								chIndexC = IncPara(chIndexC, IndexLengthA - 1, 0, 1);
@@ -985,6 +976,13 @@ void ProcessKey()
 								chIndexC = IncPara(chIndexC, IndexLengthB - 1, 0, 1);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
+							#if DefAdminParaMode
+							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+							{
+								chIndexC = IncPara(chIndexC, IndexLengthC - 1, 0, 1);
+								chIndex = tblIndexLengthC[chIndexC];
+							}
+							#endif
 							else
 							{
 								chIndex = IncPara(chIndex, chSetLength - 1, 0, 1);
@@ -993,19 +991,6 @@ void ProcessKey()
 						}
 						else
 						{
-							//chIndex = DecPara(chIndex, chSetLength - 1, 0, 1);
-							/*
-							if (chSetLength == LENGTH_SEW_A + 6)
-							{
-								chIndexC = DecPara(chIndexC, tblIndexLengthANum, 0, 1);
-								chIndex = tblIndexLengthA[chIndexC];
-							}
-							else
-							{
-								chIndex = DecPara(chIndex, chSetLength - 1, 0, 1);
-							}
-							PLAYBACK(14);
-							*/
 							if (chSetLength == IndexLengthA)
 							{
 								chIndexC = DecPara(chIndexC, IndexLengthA - 1, 0, 1);
@@ -1016,6 +1001,13 @@ void ProcessKey()
 								chIndexC = DecPara(chIndexC, IndexLengthB - 1, 0, 1);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
+							#if DefAdminParaMode
+							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+							{
+								chIndexC = DecPara(chIndexC, IndexLengthC - 1, 0, 1);
+								chIndex = tblIndexLengthC[chIndexC];
+							}
+							#endif
 							else
 							{
 								chIndex = DecPara(chIndex, chSetLength - 1, 0, 1);
@@ -1110,19 +1102,6 @@ void ProcessKey()
 					{
 						if (chKey.dwKey == K_UP)
 						{
-							//chIndex = IncPara(chIndex, chSetLength - 1, 0, 10);
-							/*
-							if (chSetLength == LENGTH_SEW_A + 6)
-							{
-								chIndexC = IncPara(chIndexC, tblIndexLengthANum, 0, 10);
-								chIndex = tblIndexLengthA[chIndexC];
-							}
-							else
-							{
-								chIndex = IncPara(chIndex, chSetLength - 1, 0, 10);
-							}
-							PLAYBACK(13);
-							*/
 							if (chSetLength == IndexLengthA)
 							{
 								chIndexC = IncPara(chIndexC, IndexLengthA - 1, 0, 10);
@@ -1133,6 +1112,13 @@ void ProcessKey()
 								chIndexC = IncPara(chIndexC, IndexLengthB - 1, 0, 10);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
+							#if DefAdminParaMode
+							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+							{
+								chIndexC = IncPara(chIndexC, IndexLengthC - 1, 0, 10);
+								chIndex = tblIndexLengthC[chIndexC];
+							}
+							#endif
 							else
 							{
 								chIndex = IncPara(chIndex, chSetLength - 1, 0, 10);
@@ -1141,19 +1127,6 @@ void ProcessKey()
 						}
 						else
 						{
-							//chIndex = DecPara(chIndex, chSetLength - 1, 0, 10);
-							/*
-							if (chSetLength == LENGTH_SEW_A + 6)
-							{
-								chIndexC = DecPara(chIndexC, tblIndexLengthANum, 0, 10);
-								chIndex = tblIndexLengthA[chIndexC];
-							}
-							else
-							{
-								chIndex = DecPara(chIndex, chSetLength - 1, 0, 10);
-							}
-							PLAYBACK(14);
-							*/
 							if (chSetLength == IndexLengthA)
 							{
 								chIndexC = DecPara(chIndexC, IndexLengthA - 1, 0, 10);
@@ -1164,6 +1137,13 @@ void ProcessKey()
 								chIndexC = DecPara(chIndexC, IndexLengthB - 1, 0, 10);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
+							#if DefAdminParaMode
+							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+							{
+								chIndexC = DecPara(chIndexC, IndexLengthC - 1, 0, 10);
+								chIndex = tblIndexLengthC[chIndexC];
+							}
+							#endif
 							else
 							{
 								chIndex = DecPara(chIndex, chSetLength - 1, 0, 10);
@@ -1181,19 +1161,6 @@ void ProcessKey()
 					{
 						if (chKey.dwKey == K_UP)
 						{
-							//chIndex = IncPara(chIndex, chSetLength - 1, 0, 100);
-							/*
-							if (chSetLength == LENGTH_SEW_A + 6)
-							{
-								chIndexC = IncPara(chIndexC, tblIndexLengthANum, 0, 100);
-								chIndex = tblIndexLengthA[chIndexC];
-							}
-							else
-							{
-								chIndex = IncPara(chIndex, chSetLength - 1, 0, 100);
-							}
-							PLAYBACK(13);
-							*/
 							if (chSetLength == IndexLengthA)
 							{
 								chIndexC = IncPara(chIndexC, IndexLengthA - 1, 0, 100);
@@ -1204,6 +1171,13 @@ void ProcessKey()
 								chIndexC = IncPara(chIndexC, IndexLengthB - 1, 0, 100);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
+							#if DefAdminParaMode
+							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+							{
+								chIndexC = IncPara(chIndexC, IndexLengthC - 1, 0, 100);
+								chIndex = tblIndexLengthC[chIndexC];
+							}
+							#endif
 							else
 							{
 								chIndex = IncPara(chIndex, chSetLength - 1, 0, 100);
@@ -1212,19 +1186,6 @@ void ProcessKey()
 						}
 						else
 						{
-							//chIndex = DecPara(chIndex, chSetLength - 1, 0, 100);
-							/*
-							if (chSetLength == LENGTH_SEW_A + 6)
-							{
-								chIndexC = DecPara(chIndexC, tblIndexLengthANum, 0, 100);
-								chIndex = tblIndexLengthA[chIndexC];
-							}
-							else
-							{
-								chIndex = DecPara(chIndex, chSetLength - 1, 0, 100);
-							}
-							PLAYBACK(14);
-							*/
 							if (chSetLength == IndexLengthA)
 							{
 								chIndexC = DecPara(chIndexC, IndexLengthA - 1, 0, 100);
@@ -1235,6 +1196,13 @@ void ProcessKey()
 								chIndexC = DecPara(chIndexC, IndexLengthB - 1, 0, 100);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
+							#if DefAdminParaMode
+							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+							{
+								chIndexC = DecPara(chIndexC, IndexLengthC - 1, 0, 100);
+								chIndex = tblIndexLengthC[chIndexC];
+							}
+							#endif
 							else
 							{
 								chIndex = DecPara(chIndex, chSetLength - 1, 0, 100);
@@ -1253,14 +1221,6 @@ void ProcessKey()
 						chIndex = tbIndexList[chIndexB][chIndexC];
 					}
 					wIndexTemp = ChangeIndexTemp(chIndex, wIndexTemp);
-					//if (chSetMode == 6)
-					//{
-					//	bClearLCD = 0;
-					//}
-					//if (chIndex == 73)
-					//{
-					//	bClearLCD = 9;
-					//}
 					if (chKey.dwKey == K_UP)
 						PLAYBACK(9);
 					else
@@ -1386,17 +1346,19 @@ void ProcessKey()
 						wIndexTemp = ReadIndexTemp(chIndex);
 						chIndexTempBit = 5; //参数位选功能
 						bIndexTempBitChange = 1;
+						bPassIdenti = 1;
 						PLAYBACK(3);
 					}
 					else if ((chIndexB == 1) && (wIndexTemp == ADMINPWD))
 					{
-						chSetLength = LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C;
+						chSetLength = LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C + LENGTH_SEW_Admin;
 						chSetMode = 2;
 						chIndex = LENGTH_SEW_A + LENGTH_SEW_B;
 						wIndexTemp = ReadIndexTemp(chIndex);
 						chIndexTempBit = 5; //参数位选功能
 						bIndexTempBitChange = 1;
 						bAdmin = 1;
+						bPassIdenti = 1;
 						PLAYBACK(4);
 					}
 					else
@@ -2241,6 +2203,7 @@ void LED_Reverse(uint LED_Num, bit ONorOFF)
 	}
 	}
 }
+
 void Flash_LED(void)
 {
 
@@ -2249,18 +2212,20 @@ void Flash_LED(void)
 
 	//if (bLEDDelay)
 	//{
-	if (chFlashLCDCount > 14)
+	if (chFlashLCDCount > 40)
 	{
 		return;
 	}
 	if (chKey.dwKey1 != 0x0000)
 	{
-		chFlashLCDCount = chFlashLCDCount + 14;
+		chFlashLCDCount = chFlashLCDCount + 40;
 	}
 	chFlashLCDCount++;
 	LED_Reverse(LED_Name_ALL, 0);
 	//	bLEDDelay = 0;
-	switch (chFlashLCDCount)
+	if(ReadData(130) == 0)
+	{
+		switch (chFlashLCDCount)
 	{
 	case 1:
 	{
@@ -2338,6 +2303,152 @@ void Flash_LED(void)
 		break;
 	}
 	}
+	}
+	else if(ReadData(130) == 1)
+	{
+	
+		switch (chFlashLCDCount)
+	{
+		case 1:
+	{
+		LED_Reverse(K_LIFT, 1);
+		break;
+	}
+	case 2:
+	{
+		LED_Reverse(K_WIN, 1);
+		break;
+	}
+	case 3:
+	{
+		LED_Reverse(K_CUT, 1);
+		break;
+	}
+	case 4:
+	{
+		LED_Reverse(K_MODE, 1);
+		break;
+	}
+	case 5:
+	{
+		LED_Reverse(K_VALUE, 1);
+		break;
+	}
+	case 6:
+	{
+		LED_Reverse(K_UP, 1);
+		break;
+	}
+	case 7:
+	{
+		LED_Reverse(K_DOWN, 1);
+		break;
+	}
+	case 8:
+	{
+		LED_Reverse(K_P, 1);
+		break;
+	}
+	case 9:
+	{
+		LED_Reverse(K_S, 1);
+		break;
+	}
+	case 10:
+	{
+		LED_Reverse(K_RIGHT, 1);
+		break;
+	}
+	case 11:
+	{
+		LED_Reverse(K_LEFT, 1);
+		break;
+	}
+	case 12:
+	{
+		LED_Reverse(K_CLOTHSETSINGLE, 1);
+		break;
+	}
+	case 13:
+	{
+		LED_Reverse(LED_Name_ALL, 0);
+		break;
+	}
+	case 14:
+	{
+		LED_Reverse(LED_Name_ALL, 0);
+		break;
+	}
+	
+	case 18:
+	{
+		LED_Reverse(K_MODE, 1);
+		break;
+	}
+	case 19:
+	{
+		LED_Reverse(K_CUT, 1);
+		break;
+	}
+	case 20:
+	{
+		LED_Reverse(K_WIN, 1);
+		break;
+	}
+	case 21:
+	{
+		LED_Reverse(K_LIFT, 1);
+		break;
+	}
+	case 22:
+	{
+		LED_Reverse(K_VALUE, 1);
+		break;
+	}
+	case 23:
+	{
+		LED_Reverse(K_UP, 1);
+		break;
+	}
+	case 24:
+	{
+		LED_Reverse(K_DOWN, 1);
+		break;
+	}
+	case 25:
+	{
+		LED_Reverse(K_P, 1);
+		break;
+	}
+	
+	case 26:
+	{
+		LED_Reverse(K_MODE, 1);
+		break;
+	}
+	case 27:
+	{
+		LED_Reverse(K_VALUE, 1);
+		break;
+	}
+	case 28:
+	{
+		LED_Reverse(K_CLOTHSETSINGLE, 1);
+		break;
+	}
+	case 29:
+	{
+		chFlashLCDCount = chFlashLCDCount + 10;
+		break;
+	}
+	default:
+	{
+		LED_Reverse(LED_Name_ALL, 0);
+		break;
+	}
+	}
+	}
+	
 	//}
 }
 #endif
@@ -2411,7 +2522,7 @@ void TestValue(void)
 uchar FindIndexC(uchar Length, uchar Index)
 {
 
-	if (Length == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+	if (Length == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C + LENGTH_SEW_Admin)
 	{
 		return 0;
 	}
@@ -2459,5 +2570,29 @@ uchar FindIndexC(uchar Length, uchar Index)
 		}
 		return 0;
 	}
+	#if DefAdminParaMode
+	else if (Length == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
+	{
+		uchar chLow = 0;
+		uchar chHigh = IndexLengthB - 1;
+		while (chLow <= chHigh)
+		{
+			uchar mid = (chLow + chHigh) / 2;
+			if (tblIndexLengthC[mid] == Index)
+			{
+				return mid;
+			}
+			if (tblIndexLengthC[mid] > Index)
+			{
+				chHigh = mid - 1;
+			}
+			if (tblIndexLengthC[mid] < Index)
+			{
+				chLow = mid + 1;
+			}
+		}
+		return 0;
+	}
+	#endif
 	return 0;
 }
