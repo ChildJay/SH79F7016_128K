@@ -2,7 +2,7 @@
  * @Description: MAIN
  * @Author: XPH
  * @Date: 2019-09-16 08:09:42
- * @LastEditTime: 2020-09-15 21:19:10
+ * @LastEditTime: 2020-09-18 09:00:32
  * @LastEditors: Please set LastEditors
  */
 #include "includes.h"
@@ -25,7 +25,10 @@ void main(void)
 		if (GetFlashLedTime())
 		{
 			ClearFlashLedTime();
-			Flash_LED();
+			if(bPowerOn == 0)
+			{
+				Flash_LED();
+			}
 		}
 #endif
 		if (Get1Ms())

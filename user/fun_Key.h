@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:16
- * @LastEditTime: 2020-08-27 17:26:11
+ * @LastEditTime: 2020-09-18 10:59:55
  * @LastEditors: Please set LastEditors
  */
 #ifndef __FUN_KEY_H
@@ -90,7 +90,7 @@ sbit P24_OUT = Key_GPIO_PORT ^ 4;
 sbit P25_OUT = Key_GPIO_PORT ^ 5;
 sbit P26_OUT = Key_GPIO_PORT ^ 6;
 sbit P27_OUT = Key_GPIO_PORT ^ 7;
-#define KEYScanTime 6 //膜按键扫描次数
+#define KEYScanTime 3 //膜按键扫描次数
 
 
 #define K_RESETSINGLE 0x0001  //1

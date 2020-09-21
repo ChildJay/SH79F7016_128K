@@ -2,7 +2,7 @@
  * @Description: 存储缝纫机默认参数等
  * @Author: XPH
  * @Date: 2019-09-16 09:07:43
- * @LastEditTime: 2020-09-16 14:07:09
+ * @LastEditTime: 2020-09-16 15:14:46
  * @LastEditors: Please set LastEditors
  */
 #ifndef __SEWMACHINEDATA_H
@@ -83,6 +83,7 @@ typedef struct
 }ErrorDisplayMsg_Typedef;
 extern code ErrorDisplayMsg_Typedef ErrorDisplayMsg[];
 
+extern code uint8 tblFlashLEDMode[6][32];
 
 #endif
 

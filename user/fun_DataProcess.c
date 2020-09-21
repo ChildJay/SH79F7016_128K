@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-15 21:22:59
+ * @LastEditTime: 2020-09-21 08:36:57
  * @LastEditors: Please set LastEditors
  */
 #include "fun_DataProcess.h"
@@ -52,7 +52,7 @@ xdata uint wTimeBack = 0;  //页面跳转的剩余时间计数
 xdata uint wTimeBack1 = 0; //提示语显示的剩余时间计数
 
 //xdata uchar chPowerOn = 50;   // 上电计时
-xdata uchar chPowerOn = 100;   // 上电计时
+xdata uchar chPowerOn = 100;  // 上电计时
 xdata uchar chResetCount = 0; //针孔式的恢复出厂设置次数计数
 bit bPassIdenti = 0;		  //管理员权限标志位，触摸按键用
 xdata uint wCanSave = 1000;   //防止异常掉电导致的数据丢失的数据保护时间计数
@@ -189,12 +189,20 @@ void ReadSewData(void)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			EEPROM_buffer[i] = ReadDataB(i, 0);
+			if (i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		for (i = 0; i < tblDataNum; i++)
 		{
 			if ((int)EEPROM_buffer[i] > 9999)
 			{
 				ErrorDataCount = 1;
+				break;
+			}
+			if (i == tblDataNum - 1)
+			{
 				break;
 			}
 		}
@@ -205,12 +213,20 @@ void ReadSewData(void)
 			for (i = 0; i < tblDataNum; i++)
 			{
 				EEPROM_buffer[i] = ReadDataB(i, 1);
+				if (i == tblDataNum - 1)
+				{
+					break;
+				}
 			}
 			for (i = 0; i < tblDataNum; i++)
 			{
 				if ((int)EEPROM_buffer[i] > 9999)
 				{
 					ErrorDataCount = 2;
+					break;
+				}
+				if (i == tblDataNum - 1)
+				{
 					break;
 				}
 			}
@@ -307,6 +323,10 @@ void ReadSetIndexTemp(uchar chResetLevel)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			EEPROM_buffer[i] = ReadDataB(i, 1);
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 	}
 	// P70项机型更改
@@ -315,6 +335,10 @@ void ReadSetIndexTemp(uchar chResetLevel)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			EEPROM_buffer[i] = tblPara[j][i];
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 	}
 	for (i = 0; i < OffsetAddrNum; i++)
@@ -356,6 +380,10 @@ void auto_clearEEprom(uchar chResetLevel)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		// 全部恢复
 	}
@@ -370,7 +398,11 @@ void auto_clearEEprom(uchar chResetLevel)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
-			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS+ 2 * (i % 128), EEPROM_buffer[i]);
+			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		// 全部恢复
 	}
@@ -385,6 +417,10 @@ void auto_clearEEprom(uchar chResetLevel)
 			{
 				EEPROM_buffer[i] = chMachine1;
 			}
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
 		{
@@ -395,6 +431,10 @@ void auto_clearEEprom(uchar chResetLevel)
 		{
 			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 	}
 	else if (chResetLevel == 3) //数据保护恢复设置
@@ -402,6 +442,10 @@ void auto_clearEEprom(uchar chResetLevel)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			EEPROM_buffer[i] = ReadDataB(i, 1);
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
 		{
@@ -412,6 +456,10 @@ void auto_clearEEprom(uchar chResetLevel)
 		{
 			eeprom_write_word(EEPROM_USER_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
 			eeprom_write_word(EEPROM_SET_START_BLOCK + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			if(i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 	}
 }

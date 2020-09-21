@@ -2,7 +2,7 @@
  * @Description: 通讯信号处理
  * @Author: xph
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-15 19:02:22
+ * @LastEditTime: 2020-09-18 10:39:15
  * @LastEditors: Please set LastEditors
  */
 #include "Comm.h"
@@ -104,7 +104,8 @@ xdata int wStepMotorAngle = 0;//步进电机实时角度
 xdata uchar chTimeInfo = 0;			 //读取电控信息的间隔时间计时
 xdata uchar chGoHomeSendDataNum = 0; //回到主界面发送信息参数
 xdata uchar chTEST = 0;				 //测试模式
-xdata uchar chSequence = 0;			 
+xdata uchar chSequence = 0;		
+
 //缝纫机状态参数序号 0 版本 1 件数 2 速度 3 上定位 4 下定位 5 踏板 6 上定位角度 7 下定位角度 
 //8 母线电压 9 编码器零点角度 10 电控版本号 11 前感应 12 中感应 13 后感应
 

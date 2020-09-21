@@ -2,7 +2,7 @@
  * @Description: 芯片内部数据存储
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-09-15 21:30:39
+ * @LastEditTime: 2020-09-21 08:42:24
  * @LastEditors: Please set LastEditors
  */
 #ifndef __BSP_EEPROM_H
@@ -20,6 +20,9 @@
 #define EEPROM_DATA_NUM 200
 #define tblDataNum 200
 #define tblDataSendGroupNum 50
+// #define EEPROM_DATA_NUM 256
+// #define tblDataNum 256
+// #define tblDataSendGroupNum 64
 #define EEPROM_BLOCK_DATA_NUM 0x100
 
 //#define CBYTE ((unsigned char volatile code *)EEPROM_START_ADDRESS)

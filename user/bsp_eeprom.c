@@ -2,7 +2,7 @@
  * @Description: 芯片内部数据存储(实际新茂芯片为flash)
  * @Author: xph
  * @Date: 2019-09-13 16:51:20
- * @LastEditTime: 2020-09-15 21:08:49
+ * @LastEditTime: 2020-09-21 08:37:48
  * @LastEditors: Please set LastEditors
  */
 #include "bsp_eeprom.h"
@@ -267,6 +267,10 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			EEPROM_buffer[i] = ReadDataB(i, Block);
+			if (i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		EEPROM_buffer[add_w] = dat_w; //写数据
 		for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
@@ -276,6 +280,10 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			if (i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 	}
 	chStartBlock = EEPROM_USER_START_BLOCK;
@@ -283,6 +291,10 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 	for (i = 0; i < tblDataNum; i++)
 	{
 		EEPROM_buffer[i] = ReadDataB(i, 0);
+		if (i == tblDataNum - 1)
+		{
+			break;
+		}
 	}
 	EEPROM_buffer[add_w] = dat_w; //写数据
 	for (i = 0; i < EEPROM_DATA_BLOCK_LENGTH; i++)
@@ -292,6 +304,10 @@ void WriteDataB(uint8 add_w, uint16 dat_w, uint8 Block)
 	for (i = 0; i < tblDataNum; i++)
 	{
 		eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+		if (i == tblDataNum - 1)
+		{
+			break;
+		}
 	}
 }
 
@@ -321,6 +337,10 @@ void StartWriteIndivWriteData(uint8 chLength, uint8 Block)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			EEPROM_buffer[i] = ReadDataB(i, Block);
+			if (i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 		//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * chStartBlock,(uint8 *)&EEPROM_buffer,tblDataNum);
 		for (i = 0; i < chLength * 2; i += 2)
@@ -334,6 +354,10 @@ void StartWriteIndivWriteData(uint8 chLength, uint8 Block)
 		for (i = 0; i < tblDataNum; i++)
 		{
 			eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+			if (i == tblDataNum - 1)
+			{
+				break;
+			}
 		}
 	}
 
@@ -341,6 +365,10 @@ void StartWriteIndivWriteData(uint8 chLength, uint8 Block)
 	for (i = 0; i < tblDataNum; i++)
 	{
 		EEPROM_buffer[i] = ReadDataB(i, Block);
+		if (i == tblDataNum - 1)
+		{
+			break;
+		}
 	}
 	//ReadEEPROM(EEPROM_BLOCK_DATA_NUM * chStartBlock,(uint8 *)&EEPROM_buffer,tblDataNum);
 	for (i = 0; i < chLength * 2; i += 2)
@@ -354,5 +382,9 @@ void StartWriteIndivWriteData(uint8 chLength, uint8 Block)
 	for (i = 0; i < tblDataNum; i++)
 	{
 		eeprom_write_word(chStartBlock + (i / 128), EEPROM_START_ADDRESS + 2 * (i % 128), EEPROM_buffer[i]);
+		if (i == tblDataNum - 1)
+		{
+			break;
+		}
 	}
 }

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:33:17
- * @LastEditTime: 2020-09-16 14:09:48
+ * @LastEditTime: 2020-09-18 08:38:18
  * @LastEditors: Please set LastEditors
  */
 #include "fun_Key.h"
@@ -104,8 +104,8 @@ void ScanKey(void)
 					dwKeytempIIC = I2CReceiveByte();
 					I2CSendACK();
 					dwKeytempIIC = (((uint)I2CReceiveByte()) << 8) | dwKeytempIIC;
-					// I2CSendACK();
-					// chKey.chTouchKeyProgramVer = I2CReceiveByte();
+					I2CSendACK();
+					dwKeytempIIC = (((uint)I2CReceiveByte()) << 15)|(dwKeytempIIC >> 1);
 					I2CSendNoACK();
 					I2CStop();
 					I2CFree();
@@ -500,7 +500,7 @@ void ScanKey(void)
 		chKey.chTime3 = 0;
 		if (chKey.dwKey1 == 0)
 		{
-	//	TOUCHLONGKEY:
+			//	TOUCHLONGKEY:
 			chKey.bKeyPress = 0;
 			if (chKey.chKeyIndex == 2)
 			{
@@ -976,13 +976,13 @@ void ProcessKey()
 								chIndexC = IncPara(chIndexC, IndexLengthB - 1, 0, 1);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
-							#if DefAdminParaMode
+#if DefAdminParaMode
 							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 							{
 								chIndexC = IncPara(chIndexC, IndexLengthC - 1, 0, 1);
 								chIndex = tblIndexLengthC[chIndexC];
 							}
-							#endif
+#endif
 							else
 							{
 								chIndex = IncPara(chIndex, chSetLength - 1, 0, 1);
@@ -1001,13 +1001,13 @@ void ProcessKey()
 								chIndexC = DecPara(chIndexC, IndexLengthB - 1, 0, 1);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
-							#if DefAdminParaMode
+#if DefAdminParaMode
 							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 							{
 								chIndexC = DecPara(chIndexC, IndexLengthC - 1, 0, 1);
 								chIndex = tblIndexLengthC[chIndexC];
 							}
-							#endif
+#endif
 							else
 							{
 								chIndex = DecPara(chIndex, chSetLength - 1, 0, 1);
@@ -1112,13 +1112,13 @@ void ProcessKey()
 								chIndexC = IncPara(chIndexC, IndexLengthB - 1, 0, 10);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
-							#if DefAdminParaMode
+#if DefAdminParaMode
 							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 							{
 								chIndexC = IncPara(chIndexC, IndexLengthC - 1, 0, 10);
 								chIndex = tblIndexLengthC[chIndexC];
 							}
-							#endif
+#endif
 							else
 							{
 								chIndex = IncPara(chIndex, chSetLength - 1, 0, 10);
@@ -1137,13 +1137,13 @@ void ProcessKey()
 								chIndexC = DecPara(chIndexC, IndexLengthB - 1, 0, 10);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
-							#if DefAdminParaMode
+#if DefAdminParaMode
 							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 							{
 								chIndexC = DecPara(chIndexC, IndexLengthC - 1, 0, 10);
 								chIndex = tblIndexLengthC[chIndexC];
 							}
-							#endif
+#endif
 							else
 							{
 								chIndex = DecPara(chIndex, chSetLength - 1, 0, 10);
@@ -1171,13 +1171,13 @@ void ProcessKey()
 								chIndexC = IncPara(chIndexC, IndexLengthB - 1, 0, 100);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
-							#if DefAdminParaMode
+#if DefAdminParaMode
 							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 							{
 								chIndexC = IncPara(chIndexC, IndexLengthC - 1, 0, 100);
 								chIndex = tblIndexLengthC[chIndexC];
 							}
-							#endif
+#endif
 							else
 							{
 								chIndex = IncPara(chIndex, chSetLength - 1, 0, 100);
@@ -1196,13 +1196,13 @@ void ProcessKey()
 								chIndexC = DecPara(chIndexC, IndexLengthB - 1, 0, 100);
 								chIndex = tblIndexLengthB[chIndexC];
 							}
-							#if DefAdminParaMode
+#if DefAdminParaMode
 							else if (chSetLength == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 							{
 								chIndexC = DecPara(chIndexC, IndexLengthC - 1, 0, 100);
 								chIndex = tblIndexLengthC[chIndexC];
 							}
-							#endif
+#endif
 							else
 							{
 								chIndex = DecPara(chIndex, chSetLength - 1, 0, 100);
@@ -1467,7 +1467,7 @@ void ProcessKey()
 				}
 				default:
 				{
-					if(chIndexB != 12)
+					if (chIndexB != 12)
 					{
 						GoToHome();
 					}
@@ -2208,246 +2208,258 @@ void Flash_LED(void)
 {
 
 	static xdata uchar chFlashLCDCount = 0; //按键流水灯计数
-											//static bit bLEDDelay = 0;				 //按键流水灯亮灯标志位
+	static uchar chFlashLEDMode = 0;
+	//static bit bLEDDelay = 0;				 //按键流水灯亮灯标志位
 
 	//if (bLEDDelay)
 	//{
-	if (chFlashLCDCount > 40)
+	if (chFlashLCDCount > 31)
 	{
 		return;
 	}
-	if (chKey.dwKey1 != 0x0000)
+	else if(chFlashLCDCount == 0)
 	{
-		chFlashLCDCount = chFlashLCDCount + 40;
+		chFlashLEDMode = ReadData(130);
 	}
-	chFlashLCDCount++;
+	// if (chKey.dwKey1 != 0x0000)
+	// {
+	// 	chFlashLCDCount = chFlashLCDCount + 33;
+	// }
+	
 	LED_Reverse(LED_Name_ALL, 0);
 	//	bLEDDelay = 0;
-	if(ReadData(130) == 0)
+	#if 0
+	chFlashLCDCount++;
+	if (ReadData(130) == 0)
 	{
 		switch (chFlashLCDCount)
-	{
-	case 1:
-	{
-		LED_Reverse(K_LIFT, 1);
-		break;
-	}
-	case 2:
-	{
-		LED_Reverse(K_WIN, 1);
-		break;
-	}
-	case 3:
-	{
-		LED_Reverse(K_CUT, 1);
-		break;
-	}
-	case 4:
-	{
-		LED_Reverse(K_MODE, 1);
-		break;
-	}
-	case 5:
-	{
-		LED_Reverse(K_VALUE, 1);
-		break;
-	}
-	case 6:
-	{
-		LED_Reverse(K_UP, 1);
-		break;
-	}
-	case 7:
-	{
-		LED_Reverse(K_DOWN, 1);
-		break;
-	}
-	case 8:
-	{
-		LED_Reverse(K_P, 1);
-		break;
-	}
-	case 9:
-	{
-		LED_Reverse(K_S, 1);
-		break;
-	}
-	case 10:
-	{
-		LED_Reverse(K_RIGHT, 1);
-		break;
-	}
-	case 11:
-	{
-		LED_Reverse(K_LEFT, 1);
-		break;
-	}
-	case 12:
-	{
-		LED_Reverse(K_CLOTHSETSINGLE, 1);
-		break;
-	}
-	case 13:
-	{
-		LED_Reverse(LED_Name_ALL, 0);
-		break;
-	}
-	case 14:
-	{
-		LED_Reverse(LED_Name_ALL, 0);
-		break;
-	}
-	default:
-	{
-		LED_Reverse(LED_Name_ALL, 0);
-		break;
-	}
-	}
-	}
-	else if(ReadData(130) == 1)
-	{
-	
-		switch (chFlashLCDCount)
-	{
+		{
 		case 1:
-	{
-		LED_Reverse(K_LIFT, 1);
-		break;
+		{
+			LED_Reverse(K_LIFT, 1);
+			break;
+		}
+		case 2:
+		{
+			LED_Reverse(K_WIN, 1);
+			break;
+		}
+		case 3:
+		{
+			LED_Reverse(K_CUT, 1);
+			break;
+		}
+		case 4:
+		{
+			LED_Reverse(K_MODE, 1);
+			break;
+		}
+		case 5:
+		{
+			LED_Reverse(K_VALUE, 1);
+			break;
+		}
+		case 6:
+		{
+			LED_Reverse(K_UP, 1);
+			break;
+		}
+		case 7:
+		{
+			LED_Reverse(K_DOWN, 1);
+			break;
+		}
+		case 8:
+		{
+			LED_Reverse(K_P, 1);
+			break;
+		}
+		case 9:
+		{
+			LED_Reverse(K_S, 1);
+			break;
+		}
+		case 10:
+		{
+			LED_Reverse(K_RIGHT, 1);
+			break;
+		}
+		case 11:
+		{
+			LED_Reverse(K_LEFT, 1);
+			break;
+		}
+		case 12:
+		{
+			LED_Reverse(K_CLOTHSETSINGLE, 1);
+			break;
+		}
+		case 13:
+		{
+			LED_Reverse(LED_Name_ALL, 0);
+			break;
+		}
+		case 14:
+		{
+			LED_Reverse(LED_Name_ALL, 0);
+			break;
+		}
+		default:
+		{
+			LED_Reverse(LED_Name_ALL, 0);
+			break;
+		}
+		}
 	}
-	case 2:
+	else if (ReadData(130) == 1)
 	{
-		LED_Reverse(K_WIN, 1);
-		break;
+
+		switch (chFlashLCDCount)
+		{
+		case 1:
+		{
+			LED_Reverse(K_LIFT, 1);
+			break;
+		}
+		case 2:
+		{
+			LED_Reverse(K_WIN, 1);
+			break;
+		}
+		case 3:
+		{
+			LED_Reverse(K_CUT, 1);
+			break;
+		}
+		case 4:
+		{
+			LED_Reverse(K_MODE, 1);
+			break;
+		}
+		case 5:
+		{
+			LED_Reverse(K_VALUE, 1);
+			break;
+		}
+		case 6:
+		{
+			LED_Reverse(K_UP, 1);
+			break;
+		}
+		case 7:
+		{
+			LED_Reverse(K_DOWN, 1);
+			break;
+		}
+		case 8:
+		{
+			LED_Reverse(K_P, 1);
+			break;
+		}
+		case 9:
+		{
+			LED_Reverse(K_S, 1);
+			break;
+		}
+		case 10:
+		{
+			LED_Reverse(K_RIGHT, 1);
+			break;
+		}
+		case 11:
+		{
+			LED_Reverse(K_LEFT, 1);
+			break;
+		}
+		case 12:
+		{
+			LED_Reverse(K_CLOTHSETSINGLE, 1);
+			break;
+		}
+		case 13:
+		{
+			LED_Reverse(LED_Name_ALL, 0);
+			break;
+		}
+		case 14:
+		{
+			LED_Reverse(LED_Name_ALL, 0);
+			break;
+		}
+
+		case 18:
+		{
+			LED_Reverse(K_MODE, 1);
+			break;
+		}
+		case 19:
+		{
+			LED_Reverse(K_CUT, 1);
+			break;
+		}
+		case 20:
+		{
+			LED_Reverse(K_WIN, 1);
+			break;
+		}
+		case 21:
+		{
+			LED_Reverse(K_LIFT, 1);
+			break;
+		}
+		case 22:
+		{
+			LED_Reverse(K_VALUE, 1);
+			break;
+		}
+		case 23:
+		{
+			LED_Reverse(K_UP, 1);
+			break;
+		}
+		case 24:
+		{
+			LED_Reverse(K_DOWN, 1);
+			break;
+		}
+		case 25:
+		{
+			LED_Reverse(K_P, 1);
+			break;
+		}
+
+		case 26:
+		{
+			LED_Reverse(K_MODE, 1);
+			break;
+		}
+		case 27:
+		{
+			LED_Reverse(K_VALUE, 1);
+			break;
+		}
+		case 28:
+		{
+			LED_Reverse(K_CLOTHSETSINGLE, 1);
+			break;
+		}
+		case 29:
+		{
+			chFlashLCDCount = chFlashLCDCount + 10;
+			break;
+		}
+		default:
+		{
+			LED_Reverse(LED_Name_ALL, 0);
+			break;
+		}
+		}
 	}
-	case 3:
-	{
-		LED_Reverse(K_CUT, 1);
-		break;
-	}
-	case 4:
-	{
-		LED_Reverse(K_MODE, 1);
-		break;
-	}
-	case 5:
-	{
-		LED_Reverse(K_VALUE, 1);
-		break;
-	}
-	case 6:
-	{
-		LED_Reverse(K_UP, 1);
-		break;
-	}
-	case 7:
-	{
-		LED_Reverse(K_DOWN, 1);
-		break;
-	}
-	case 8:
-	{
-		LED_Reverse(K_P, 1);
-		break;
-	}
-	case 9:
-	{
-		LED_Reverse(K_S, 1);
-		break;
-	}
-	case 10:
-	{
-		LED_Reverse(K_RIGHT, 1);
-		break;
-	}
-	case 11:
-	{
-		LED_Reverse(K_LEFT, 1);
-		break;
-	}
-	case 12:
-	{
-		LED_Reverse(K_CLOTHSETSINGLE, 1);
-		break;
-	}
-	case 13:
-	{
-		LED_Reverse(LED_Name_ALL, 0);
-		break;
-	}
-	case 14:
-	{
-		LED_Reverse(LED_Name_ALL, 0);
-		break;
-	}
+	#else
 	
-	case 18:
-	{
-		LED_Reverse(K_MODE, 1);
-		break;
-	}
-	case 19:
-	{
-		LED_Reverse(K_CUT, 1);
-		break;
-	}
-	case 20:
-	{
-		LED_Reverse(K_WIN, 1);
-		break;
-	}
-	case 21:
-	{
-		LED_Reverse(K_LIFT, 1);
-		break;
-	}
-	case 22:
-	{
-		LED_Reverse(K_VALUE, 1);
-		break;
-	}
-	case 23:
-	{
-		LED_Reverse(K_UP, 1);
-		break;
-	}
-	case 24:
-	{
-		LED_Reverse(K_DOWN, 1);
-		break;
-	}
-	case 25:
-	{
-		LED_Reverse(K_P, 1);
-		break;
-	}
-	
-	case 26:
-	{
-		LED_Reverse(K_MODE, 1);
-		break;
-	}
-	case 27:
-	{
-		LED_Reverse(K_VALUE, 1);
-		break;
-	}
-	case 28:
-	{
-		LED_Reverse(K_CLOTHSETSINGLE, 1);
-		break;
-	}
-	case 29:
-	{
-		chFlashLCDCount = chFlashLCDCount + 10;
-		break;
-	}
-	default:
-	{
-		LED_Reverse(LED_Name_ALL, 0);
-		break;
-	}
-	}
-	}
+	P2 = tblFlashLEDMode[chFlashLEDMode][chFlashLCDCount];
+	chFlashLCDCount++;
+	#endif
 	
 	//}
 }
@@ -2570,7 +2582,7 @@ uchar FindIndexC(uchar Length, uchar Index)
 		}
 		return 0;
 	}
-	#if DefAdminParaMode
+#if DefAdminParaMode
 	else if (Length == LENGTH_SEW_A + LENGTH_SEW_B + LENGTH_SEW_C)
 	{
 		uchar chLow = 0;
@@ -2593,6 +2605,6 @@ uchar FindIndexC(uchar Length, uchar Index)
 		}
 		return 0;
 	}
-	#endif
+#endif
 	return 0;
 }
