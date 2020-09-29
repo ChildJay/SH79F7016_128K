@@ -2,14 +2,14 @@
  * @Description: 宏定义
  * @Author: XPH
  * @Date: 2019-09-13 16:52:45
- * @LastEditTime: 2020-09-15 20:45:24
+ * @LastEditTime: 2020-09-26 17:04:27
  * @LastEditors: Please set LastEditors
  */
 #ifndef __USERFINE_H
 #define __USERFINE_H
 #include "reg_it.h"
 //#define PANELVER 5424
-#define PANELVER 7203
+#define PANELVER 7204
 
 #define ADMINPWD 2004
 #define ADMINVER 000
@@ -94,6 +94,6 @@
 
 #define LENGTH_SEW_A 25 // 参数A项数
 #define LENGTH_SEW_B 44     // 参数B项数
-#define LENGTH_SEW_C 24 + 13 + 21 + 4//6    // 参数C项数, 出厂参数
+#define LENGTH_SEW_C 24 + 13 + 21 + 15//6    // 参数C项数, 出厂参数
 #define LENGTH_SEW_Admin 0//6    // 管理员参数
 #endif
