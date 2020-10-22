@@ -9,7 +9,7 @@
 #define __USERFINE_H
 #include "reg_it.h"
 //#define PANELVER 5424
-#define PANELVER 7204
+#define PANELVER 7205
 
 #define ADMINPWD 2004
 #define ADMINVER 000

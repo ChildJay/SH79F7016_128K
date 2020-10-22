@@ -2102,7 +2102,7 @@ void TestException(void)
 }
 void TestVoiceStatus(void)
 {
-	if (PlayVoiceMCU == 1)
+	if (PlayVoiceMCU == 1 && PlayVoiceMCU == 4)
 	{
 		if (RDY_temp != SPI_RDY && SPI_RDY == 0)
 		{
